@@ -60,7 +60,7 @@ int C(int x, int y)
 
 
 	//(2).Write C code to print the stack frame link list.
-	printf("Initial FP = %d\n", FP);
+	printf("Initial FP = %x\n", FP);
 
 	//C Function Frame
 	printf("x = %x\n", *(FP + 12));
@@ -108,11 +108,11 @@ int C(int x, int y)
 	printf("c = %x\n", *(FP - 16));
 
 	//crt0.o
-	FP = *(FP);
+	//FP = *(FP);
 	
 	//printf("argc = %d\n", (FP + 8));
 	//printf("PC = %d\n", *(FP + 4));
-	printf("FP = %x\n", *FP);
+	//printf("FP = %x\n", *FP);
 	//printf("a = %d\n", (FP - 4));
 
 	p = (int *)&p;
