@@ -13,33 +13,42 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="t1.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="t2.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="t3.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="t4.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="t5.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="t6.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="t.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+    <Filter Include="Source Files\Part 1">
+      <UniqueIdentifier>{09658826-0e75-44d6-84d5-4ca863016f7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Part 2">
+      <UniqueIdentifier>{987ad459-345f-4637-bbd5-edb00835682a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.mak">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="Part 2\ts.s">
+      <Filter>Source Files\Part 2</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Part 1\t1.c">
+      <Filter>Source Files\Part 1</Filter>
+    </ClCompile>
+    <ClCompile Include="Part 1\t2.c">
+      <Filter>Source Files\Part 1</Filter>
+    </ClCompile>
+    <ClCompile Include="Part 1\t3.c">
+      <Filter>Source Files\Part 1</Filter>
+    </ClCompile>
+    <ClCompile Include="Part 1\t4.c">
+      <Filter>Source Files\Part 1</Filter>
+    </ClCompile>
+    <ClCompile Include="Part 1\t5.c">
+      <Filter>Source Files\Part 1</Filter>
+    </ClCompile>
+    <ClCompile Include="Part 1\t6.c">
+      <Filter>Source Files\Part 1</Filter>
+    </ClCompile>
+    <ClCompile Include="Part 2\t.c">
+      <Filter>Source Files\Part 2</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

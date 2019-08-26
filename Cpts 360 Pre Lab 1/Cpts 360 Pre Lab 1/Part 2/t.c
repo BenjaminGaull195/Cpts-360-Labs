@@ -53,7 +53,7 @@ int C(int x, int y)
 	printf("enter C\n");
 	// write C cdoe to PRINT ADDRESS OF u,v,w,i,p;
 	u = 10; v = 11; w = 12; i = 13;
-	printf("&u = %x, &v = %x, &w = %x, &i = %x, &p = %x\n", &u, &v, &w, &i, p);
+	printf("&u = %x, &v = %x, &w = %x, &i = %x, &p = %x\n\n", &u, &v, &w, &i, p);
 
 
 	FP = (int *)getebp();  // FP = stack frame pointer of the C() function
@@ -61,6 +61,58 @@ int C(int x, int y)
 
 	//(2).Write C code to print the stack frame link list.
 
+	//C Function Frame
+	printf("x = %d\n", (FP + 12));
+	printf("y = %d\n", (FP + 8));
+	printf("PC = %d\n", (FP + 4));
+	printf("FP = %d\n", FP);
+	printf("u = %d\n", (FP - 4));
+	printf("v = %d\n", (FP - 8));
+	printf("w = %d\n", (FP - 12));
+	printf("i = %d\n", (FP - 16));
+	printf("p = %d\n", (FP - 20));
+
+	//B Function Frame
+	FP = *(FP);
+
+	printf("x = %d\n", (FP + 12));
+	printf("y = %d\n", (FP + 8));
+	printf("PC = %d\n", (FP + 4));
+	printf("FP = %d\n", FP);
+	printf("g = %d\n", (FP - 4));
+	printf("h = %d\n", (FP - 8));
+	printf("i = %d\n", (FP - 12));
+
+	//A Function Frame
+	FP = *(FP);
+
+	printf("x = %d\n", (FP + 12));
+	printf("y = %d\n", (FP + 8));
+	printf("PC = %d\n", (FP + 4));
+	printf("FP = %d\n", FP);
+	printf("d = %d\n", (FP - 4));
+	printf("e = %d\n", (FP - 8));
+	printf("f = %d\n", (FP - 12));
+
+	//Main
+	FP = *(FP);
+
+	printf("env = %d\n", (FP + 16));
+	printf("argv = %d\n", (FP + 12));
+	printf("argc = %d\n", (FP + 8));
+	printf("PC = %d\n", (FP + 4));
+	printf("FP = %d\n", FP);
+	printf("a = %d\n", (FP - 4));
+	printf("b = %d\n", (FP - 8));
+	printf("c = %d\n", (FP - 16));
+
+	//crt0.o
+	FP = *(FP);
+	
+	//printf("argc = %d\n", (FP + 8));
+	printf("PC = %d\n", (FP + 4));
+	printf("FP = %d\n", FP);
+	//printf("a = %d\n", (FP - 4));
 
 	p = (int *)&p;
 

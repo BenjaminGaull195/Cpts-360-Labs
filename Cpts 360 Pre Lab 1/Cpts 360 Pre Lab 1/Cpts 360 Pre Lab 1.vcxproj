@@ -115,16 +115,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="t.c" />
-    <ClCompile Include="t1.c" />
-    <ClCompile Include="t2.c" />
-    <ClCompile Include="t3.c" />
-    <ClCompile Include="t4.c" />
-    <ClCompile Include="t5.c" />
-    <ClCompile Include="t6.c" />
+    <None Include="Makefile.mak" />
+    <None Include="Part 2\ts.s" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Makefile.mak" />
+    <ClCompile Include="Part 1\t1.c" />
+    <ClCompile Include="Part 1\t2.c" />
+    <ClCompile Include="Part 1\t3.c" />
+    <ClCompile Include="Part 1\t4.c" />
+    <ClCompile Include="Part 1\t5.c" />
+    <ClCompile Include="Part 1\t6.c" />
+    <ClCompile Include="Part 2\t.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
