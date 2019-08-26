@@ -60,59 +60,59 @@ int C(int x, int y)
 
 
 	//(2).Write C code to print the stack frame link list.
-	printf("Initial FP = %d/n", FP);
+	printf("Initial FP = %d\n", FP);
 
 	//C Function Frame
-	printf("x = %d\n", *(FP + 12));
-	printf("y = %d\n", *(FP + 8));
-	printf("PC = %d\n", *(FP + 4));
-	printf("FP = %d\n", *(FP));
-	printf("u = %d\n", *(FP - 4));
-	printf("v = %d\n", *(FP - 8));
-	printf("w = %d\n", *(FP - 12));
-	printf("i = %d\n", *(FP - 16));
-	printf("p = %d\n", *(FP - 20));
+	printf("x = %x\n", *(FP + 12));
+	printf("y = %x\n", *(FP + 8));
+	printf("PC = %x\n", *(FP + 4));
+	printf("FP = %x\n", *(FP));
+	printf("u = %x\n", *(FP - 4));
+	printf("v = %x\n", *(FP - 8));
+	printf("w = %x\n", *(FP - 12));
+	printf("i = %x\n", *(FP - 16));
+	printf("p = %x\n", *(FP - 20));
 
 	//B Function Frame
 	FP = *(FP);
 
-	printf("x = %d\n", *(FP + 12));
-	printf("y = %d\n", *(FP + 8));
-	printf("PC = %d\n", *(FP + 4));
-	printf("FP = %d\n", *(FP));
-	printf("g = %d\n", *(FP - 4));
-	printf("h = %d\n", *(FP - 8));
-	printf("i = %d\n", *(FP - 12));
+	printf("x = %x\n", *(FP + 12));
+	printf("y = %x\n", *(FP + 8));
+	printf("PC = %x\n", *(FP + 4));
+	printf("FP = %x\n", *(FP));
+	printf("g = %x\n", *(FP - 4));
+	printf("h = %x\n", *(FP - 8));
+	printf("i = %x\n", *(FP - 12));
 
 	//A Function Frame
 	FP = *(FP);
 
-	printf("x = %d\n", *(FP + 12));
-	printf("y = %d\n", *(FP + 8));
-	printf("PC = %d\n", *(FP + 4));
-	printf("FP = %d\n", *(FP));
-	printf("d = %d\n", *(FP - 4));
-	printf("e = %d\n", *(FP - 8));
-	printf("f = %d\n", *(FP - 12));
+	printf("x = %x\n", *(FP + 12));
+	printf("y = %x\n", *(FP + 8));
+	printf("PC = %x\n", *(FP + 4));
+	printf("FP = %x\n", *(FP));
+	printf("d = %x\n", *(FP - 4));
+	printf("e = %x\n", *(FP - 8));
+	printf("f = %x\n", *(FP - 12));
 
 	//Main
 	FP = *(FP);
 
-	printf("env = %d\n", *(FP + 16));
-	printf("argv = %d\n", *(FP + 12));
-	printf("argc = %d\n", *(FP + 8));
-	printf("PC = %d\n", *(FP + 4));
-	printf("FP = %d\n", *(FP));
-	printf("a = %d\n", *(FP - 4));
-	printf("b = %d\n", *(FP - 8));
-	printf("c = %d\n", *(FP - 16));
+	printf("env = %x\n", *(FP + 16));
+	printf("argv = %x\n", *(FP + 12));
+	printf("argc = %x\n", *(FP + 8));
+	printf("PC = %x\n", *(FP + 4));
+	printf("FP = %x\n", *(FP));
+	printf("a = %x\n", *(FP - 4));
+	printf("b = %x\n", *(FP - 8));
+	printf("c = %x\n", *(FP - 16));
 
 	//crt0.o
 	FP = *(FP);
 	
 	//printf("argc = %d\n", (FP + 8));
-	printf("PC = %d\n", *(FP + 4));
-	printf("FP = %d\n", *FP);
+	//printf("PC = %d\n", *(FP + 4));
+	printf("FP = %x\n", *FP);
 	//printf("a = %d\n", (FP - 4));
 
 	p = (int *)&p;
