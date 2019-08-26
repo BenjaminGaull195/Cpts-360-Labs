@@ -1,0 +1,51 @@
+enter main
+&argc=ffb27db0 argv=ffb27e44 env=ffb27e58
+&a=ffb27d6c &b=ffb27d70 &c=ffb27d74
+argc = 4
+argv[0] = ./a.out
+argv[1] = one
+argv[2] = two
+argv[3] = three
+enter A
+&d = ffb27d20, &e = ffb27d24, &f = ffb27d28
+enter B
+&g = ffb27cf0, &h = ffb27cf4, &i = ffb27cf8
+enter C
+&u = ffb27cb8, &v = ffb27cbc, &w = ffb27cc0, &i = ffb27cc4, &p = ffb27ce4
+
+Initial FP = ffb27cd8
+x = ffb27d38
+y = 9
+PC = ffb27cf4
+FP = ffb27d08
+u = ffb27ce4
+v = a
+w = f7d5674b
+i = f7d46a55
+p = ffb27ca4
+x = ffb27d98
+y = 6
+PC = ffb27d24
+FP = ffb27d38
+g = 9
+h = ffb27cf4
+i = ffb27d08
+x = 0
+y = ffb27e58
+PC = ffb283d3
+FP = ffb27d98
+d = 6
+e = ffb27d24
+f = ffb27d38
+env = f7ecf000
+argv = f7ecf000
+argc = ffb27e58
+PC = 0
+FP = 0
+a = ffb27e58
+b = 4
+c = ffb27e58
+exit C
+exit B
+exit A
+exit main

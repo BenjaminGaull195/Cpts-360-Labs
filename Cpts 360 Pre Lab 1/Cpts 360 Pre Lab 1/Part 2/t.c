@@ -63,6 +63,7 @@ int C(int x, int y)
 	printf("Initial FP = %x\n", FP);
 
 	//C Function Frame
+	
 	printf("x = %x\n", *(FP + 12));
 	printf("y = %x\n", *(FP + 8));
 	printf("PC = %x\n", *(FP + 4));
