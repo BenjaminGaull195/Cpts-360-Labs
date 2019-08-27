@@ -1,3 +1,8 @@
+#ifndef PARTITION_H
+#define PARTITION
+
+
+#define PART_TABLE_OFFSET 0x1BE
 
 typedef unsigned char  u8;
 typedef unsigned short u16;
@@ -19,3 +24,12 @@ struct partition {
 	u32 start_sector;     /* starting sector counting from 0 */
 	u32 nr_sectors;       /* number of sectors in partition */
 };
+
+
+
+
+
+
+
+#endif // !PARTITION_H
+

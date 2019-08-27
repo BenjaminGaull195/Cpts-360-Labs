@@ -84,7 +84,11 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Users\brgau\Source\Repos\BenjaminGaull195\Cpts-360-Labs\Lab 1\Part 2\Lab 1 Part 2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>C:\Users\brgau\Source\Repos\BenjaminGaull195\Cpts-360-Labs\Lab 1\Part 2\Lab 1 Part 2;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -116,7 +120,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="app.c" />
-    <ClCompile Include="partition.c" />
+    <ClCompile Include="partition.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="vdisk" />

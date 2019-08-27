@@ -15,11 +15,11 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="partition.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="app.c">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="partition.h">
+      <Filter>Header Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
