@@ -21,6 +21,9 @@
     <ClCompile Include="partition.h">
       <Filter>Header Files</Filter>
     </ClCompile>
+    <ClCompile Include="app_test.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="vdisk">

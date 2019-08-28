@@ -120,6 +120,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="app.c" />
+    <ClCompile Include="app_test.c" />
     <ClCompile Include="partition.h" />
   </ItemGroup>
   <ItemGroup>
