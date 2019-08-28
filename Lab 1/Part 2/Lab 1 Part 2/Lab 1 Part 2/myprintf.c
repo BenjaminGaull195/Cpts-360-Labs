@@ -34,7 +34,13 @@ int printu(u32 x)
 }
 
 int prints(u32 x) {
+	char * buf = (char *)x;
+	int count = 0;
 
+	while (buf[count] != '\0') {
+		putchar(buf[count]);
+		++count;
+	}
 	return 0;
 }
 
@@ -69,12 +75,12 @@ int printx(u32 x) {
 
 
 int myprintf(char *fmt, ... ) {
-	char *cp = (char *)getebp();
-	int *ip = (int *)getebp();		//increment by 1 for each % encountered
+	char *cp = &fmt;
+	int *ip = (int *)&fmt;		//increment by 1 for each % encountered
 	int count = 0;
 	char temp;
 
-	while (fmt[count] != '\n') {
+	while (fmt[count] != '\0') {
 		temp = fmt[count];
 
 		if (temp == '%') {
@@ -85,7 +91,7 @@ int myprintf(char *fmt, ... ) {
 			switch (temp)
 			{
 			case 's':
-				prints(*(ip));
+				prints(*(ip));	//may need to not dereference ip
 				break;
 			case 'c':
 				putchar(temp);
@@ -107,6 +113,10 @@ int myprintf(char *fmt, ... ) {
 				break;
 			}
 
+		}
+		else if (temp == '\n') {
+			putchar('\n');
+			putchar('\r');
 		}
 		else {
 			putchar(temp);
