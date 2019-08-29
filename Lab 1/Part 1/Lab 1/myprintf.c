@@ -33,8 +33,8 @@ int printu(u32 x)
 	return 0;
 }
 
-int prints(char *buf) {
-	//char * buf = (char *)x;
+int prints(u32 x) {
+	char * buf = (char *)x;
 	int count = 0;
 
 	while (buf[count] != '\0') {
@@ -51,9 +51,8 @@ int printc(u32 x) {
 }
 */
 
-int printd(u32 x) {
-	int y = (int) x;
-	(y < 0) ? (-1 * rpu(-1 * y)) : rpu(y);
+int printd(int x) {
+	(x < 0) ? (-1 * rpu(-1 * x)) : rpu(x);
 	return 0;
 }
 int printo(u32 x) {
@@ -81,20 +80,18 @@ int myprintf(char *fmt, ... ) {
 	int count = 0;
 	char temp;
 
-	//--ip;
-
 	while (fmt[count] != '\0') {
 		temp = fmt[count];
 
 		if (temp == '%') {
 			++count;
-			temp = cp[count];
+			temp = fmt[count];
 			++ip;
 
 			switch (temp)
 			{
 			case 's':
-				prints((char*)(ip));	//may need to not dereference ip
+				prints(ip);	//may need to not dereference ip
 				break;
 			case 'c':
 				putchar(temp);
