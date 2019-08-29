@@ -1,5 +1,5 @@
-
-
+#include "myprintf.h"
+#include "stdio.h"
 
 
 typedef unsigned int u32;
@@ -75,7 +75,7 @@ int printx(u32 x) {
 
 
 int myprintf(char *fmt, ... ) {
-	char *cp = &fmt;
+	char *cp = fmt;
 	int *ip = (int *)&fmt;		//increment by 1 for each % encountered
 	int count = 0;
 	char temp;
