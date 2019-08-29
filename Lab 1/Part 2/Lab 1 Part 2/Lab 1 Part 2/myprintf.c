@@ -2,6 +2,12 @@
 #include "stdio.h"
 
 
+extern void * getebp();
+
+
+
+
+
 typedef unsigned int u32;
 
 char *ctable = "0123456789ABCDEF";
@@ -34,7 +40,7 @@ int printu(u32 x)
 }
 
 int prints(u32 x) {
-	char * buf = (char *)x;
+	char *buf = x;
 	int count = 0;
 
 	while (buf[count] != '\0') {
@@ -75,10 +81,12 @@ int printx(u32 x) {
 
 
 int myprintf(char *fmt, ... ) {
-	char *cp = fmt;
-	int *ip = (int *)&fmt;		//increment by 1 for each % encountered
+	char *cp = (char *)fmt;
+	int *ip = (int *)fmt;		
 	int count = 0;
 	char temp;
+	++ip;
+	++ip;
 
 	while (fmt[count] != '\0') {
 		temp = fmt[count];
@@ -94,7 +102,7 @@ int myprintf(char *fmt, ... ) {
 				prints(*(ip));	//may need to not dereference ip
 				break;
 			case 'c':
-				putchar(temp);
+				putchar(*(ip));
 				break;
 			case 'd':
 				printd(*(ip));
