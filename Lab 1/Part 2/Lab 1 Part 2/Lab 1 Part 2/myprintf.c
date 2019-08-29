@@ -91,7 +91,7 @@ int myprintf(char *fmt, ... ) {
 			switch (temp)
 			{
 			case 's':
-				prints(*(ip));	//may need to not dereference ip
+				prints(ip);	//may need to not dereference ip
 				break;
 			case 'c':
 				putchar(temp);
