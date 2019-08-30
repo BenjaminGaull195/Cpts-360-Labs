@@ -22,6 +22,7 @@ int endLog(FILE *outfile) {
 
 void printError(int errno, char *cmd, FILE *outfile) {
 	int err = -1 * errno;
+	printf("Command: %s;  Result: %s\n", cmd, errorList[err);
 	fprintf(outfile, "Command: %s;  Result: %s\n", cmd, errorList[err]);
 }
 
