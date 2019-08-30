@@ -12,6 +12,7 @@ extern char *commands[25];
 typedef int(*cmd_prt)(char*);
 typedef int(*cmd_prt)();
 
+//
 int run_cmd(cmd_prt cmd, char *temp);
 
 //to initialize when first launched
