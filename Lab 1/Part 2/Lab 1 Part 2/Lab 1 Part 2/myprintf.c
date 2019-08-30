@@ -40,7 +40,7 @@ int printu(u32 x)
 }
 
 int prints(u32 x) {
-	char *buf = x;
+	char *buf = (char *)x;
 	int count = 0;
 
 	while (buf[count] != '\0') {
