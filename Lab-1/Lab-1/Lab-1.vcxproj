@@ -87,12 +87,15 @@
     <ClCompile Include="command.c" />
     <ClCompile Include="error.c" />
     <ClCompile Include="fileTree.c" />
+    <ClCompile Include="main.c" />
     <ClCompile Include="sample.c" />
+    <ClCompile Include="util.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="command.h" />
     <ClInclude Include="error.h" />
     <ClInclude Include="fileTree.h" />
+    <ClInclude Include="util.h" />
   </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

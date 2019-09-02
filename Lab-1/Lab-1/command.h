@@ -2,23 +2,29 @@
 #define COMMAND_H
 
 #include "fileTree.h"
+#include "error.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 
-extern char *commands[25];
 
-typedef int(*cmd_prt)(char*);
-typedef int(*cmd_prt)();
 
-//
-int run_cmd(cmd_prt cmd, char *temp);
+
+extern char *commands[25];			//array of command strings
+
+typedef int(*cmd_prt)(char*);		//function pointer for string parameter
+typedef int(*cmd_prt)();			//function pointer for no parameter
+
+extern cmd_ptr * cmd[];				//array of function pointers
+
+//function to execute commands
+int run_cmd(cmd_prt cmd, char *temp);	
 
 //to initialize when first launched
 int initialize();
 
-
+int findcmd(char *p);
 
 //mkdir pathname
 int mkdir(char *pathname);
