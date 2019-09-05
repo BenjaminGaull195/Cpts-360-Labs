@@ -10,7 +10,7 @@
 typedef struct node {
 	char name[64];
 	char type;
-	struct Node *parent, *sibling, *Child;
+	struct Node *parent, *sibling, *child;
 } NODE;
 
 extern NODE *root, *cwd, *start;
@@ -21,7 +21,7 @@ int insertChild(NODE * parent, NODE *p);
 
 int removeChild(NODE *parent, char *pathname);
 
-NODE *searchChild(NODE * parent, char *name);
+NODE *searchChild(NODE * parent, char *name, char type);
 
 
 

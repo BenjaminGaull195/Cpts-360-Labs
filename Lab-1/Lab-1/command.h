@@ -3,6 +3,8 @@
 
 #include "fileTree.h"
 #include "error.h"
+#include "util.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,14 +14,16 @@
 
 
 extern char *commands[25];			//array of command strings
+extern char dname[64], bname[64];
 
-typedef int(*cmd_prt)(char*);		//function pointer for string parameter
-typedef int(*cmd_prt)();			//function pointer for no parameter
+
+typedef int(*cmd_ptr)(char*);		//function pointer for string parameter
+typedef int(*cmd_ptr)();			//function pointer for no parameter
 
 extern cmd_ptr * cmd[];				//array of function pointers
 
 //function to execute commands
-int run_cmd(cmd_prt cmd, char *temp);	
+int run_cmd(cmd_ptr cmd, char *temp);	
 
 //to initialize when first launched
 int initialize();

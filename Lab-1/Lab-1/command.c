@@ -1,13 +1,14 @@
 #include "command.h"
-#include "util.h"
 
 
-char *commands[15] = {"mkdir", "rmdir", "cd", "ls", "Pwd", "creat", "rm", "save", "reload", "menu", "quit", NULL};
+char *commands[15] = {"mkdir", "rmdir", "cd", "ls", "Pwd", "creat", "rm", "save", "reload", "menu", "quit", '\0'};
 
-extern cmd_ptr * cmd[15] = { &mkdir, &rmdir, &cd, &ls, &pwd, &creat, &rm, &save, &reload, &menu, &quit };
+cmd_ptr * cmd[15] = { &mkdir, &rmdir, &cd, &ls, &pwd, &creat, &rm, &save, &reload, &menu, &quit };
+char dname[64], bname[64];
 
 
-int run_cmd(cmd_prt cmd, char *temp) {
+
+int run_cmd(cmd_ptr cmd, char *temp) {
 	
 	if (temp[0] = '\0') {
 		return cmd();
@@ -39,7 +40,7 @@ int initialize() {
 	root = temp;
 	root->parent = root;
 	root->sibling = root;
-	root->Child = NULL;
+	root->child = NULL;
 	root->type = 'D';
 	strcpy(root->name, "/");
 	cwd = root;
@@ -52,11 +53,14 @@ int initialize() {
 
 //mkdir pathname
 int mkdir(char *pathname) {
-	NODE *p = (NODE *)malloc(sizeof(NODE));
-	printf("mkdir : dirname = %s\n", pathame);
+	NODE *p, *q;
+	int count = 0;
+	char * s;
+	printf("mkdir : dirname = %s\n", pathname);
 
-	if (strcmp(pathname, "/") == 0) {
-		printf("can't mkdir with /\n");
+
+	if (!strcmp(pathname, "/") || !strcmp(pathname, ".") || !strcmp(pathname, "..")) {
+		printf("can't mkdir with %s\n", pathname);
 		return -1;
 	}
 	if (pathname[0] == '/') {
@@ -65,26 +69,57 @@ int mkdir(char *pathname) {
 	else {
 		start = cwd;
 	}
+	//break pathname into base name and dir name
+	dbname(pathname);
 
-	printf("check if %s already exists", pathname);
-	p = searchChild(start, pathname);
-	if (p) {
-		printError(-7, "creat", logfile);
+	//tokenize 
+	s = strtok(dname, "/");  // first call to strtok()
+	while (s) {
+		++count;
+		//printf(“%s “, s);
+		s = strtok(0, "/");  // call strtok() until it returns NULL
+		q = searchChild(start, s, 'D');
+		if (q && !strcmp(q->type, "D")) {
+			start = q;
+		}
+		else if (!q) {
+			printf("Error: Path not found\n");
+			return -1;
+		}
+		else if (strcmp(q->type, "D")) {
+			printf("Error: Pathname containes a file\n");
+			return -1;
+		}
+		
+	}
+	q = searchChild(start, bname, 'D');
+	if (!q) {
+		p = (NODE *)malloc(sizeof(NODE));;
+		p->type = 'D';
+		strcpy(p->name, pathname);
+		insertChild(start, p);
+		printf("makedir %s OK\n", pathname);
 		return -1;
+
 	}
-
-	printf("ready to creat %s\n", pathname);
-	if (!p) {
-		printError(-1, "creat", logfile);
-		return -1
-	}
+	printf("Dir = %s already exists\n", pathname);
+	return -1;
 
 
-	p->type = 'D';
-	strcpy(p->name, pathname);
-	insertChild(start, p);
-	printf("makedir %s OK\n", pathname);
-	return 0;
+	//printf("check if %s already exists", pathname);
+	//p = searchChild(start, pathname);
+	//if (p) {
+	//	printError(-7, "creat", logfile);
+	//	return -1;
+	//}
+
+	//printf("ready to creat %s\n", pathname);
+	//if (!p) {
+	//	printError(-1, "creat", logfile);
+	//	return -1
+	//}
+
+	
 }
 
 //rmdir pathname
@@ -152,36 +187,58 @@ int pwd() {
 }
 
 //creat <filename>
-int creat(char *filename) {
-	NODE *p = (NODE *)malloc(sizeof(NODE));
-	printf("creat : filename = %s\n", filename);
+int creat(char *pathname) {
+	NODE *p, *q;
+	int count = 0;
+	char * s;
+	printf("creat : dirname = %s\n", pathname);
 
-	if (filename[0] == '/') {
+
+	if (!strcmp(pathname, "/") || !strcmp(pathname, ".") || !strcmp(pathname, "..")) {
+		printf("can't creat with %s\n", pathname);
+		return -1;
+	}
+	if (pathname[0] == '/') {
 		start = root;
 	}
 	else {
 		start = cwd;
 	}
+	//break pathname into base name and dir name
+	dbname(pathname);
 
-	printf("check if %s already exists", filename);
-	p = searchChild(start, filename);
-	if (p) {
-		printError(-7, "creat", logfile);
+	//tokenize 
+	s = strtok(dname, "/");  // first call to strtok()
+	while (s) {
+		++count;
+		//printf(“%s “, s);
+		s = strtok(0, "/");  // call strtok() until it returns NULL
+		q = searchChild(start, s, 'F');
+		if (q && !strcmp(q->type, "F")) {
+			start = q;
+		}
+		else if (!q) {
+			printf("Error: Path not found\n");
+			return -1;
+		}
+		else if (strcmp(q->type, "D")) {
+			printf("Error: Pathname containes a file\n");
+			return -1;
+		}
+
+	}
+	q = searchChild(start, bname, 'F');
+	if (!q) {
+		p = (NODE *)malloc(sizeof(NODE));;
+		p->type = 'F';
+		strcpy(p->name, pathname);
+		insertChild(start, p);
+		printf("creat %s OK\n", pathname);
 		return -1;
+
 	}
-
-	printf("ready to creat %s\n", filename);
-	if (!p) {
-		printError(-1, "creat", logfile);
-		return -1
-	}
-
-
-	p->type = 'F';
-	strcpy(p->name, filename);
-	insertChild(start, p);
-	printf("makedir %s OK\n", filename);
-	return 0;
+	printf("File = %s already exists\n", pathname);
+	return -1;
 }
 
 //rm <filename>

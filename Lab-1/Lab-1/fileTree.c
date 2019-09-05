@@ -18,8 +18,8 @@ int insertChild(NODE * parent, NODE *p) {
 
 }
 
-NODE *searchChild(NODE * parent, char *name) {
-	NODE *p = partent->child;
+NODE *searchChild(NODE * parent, char *name, char type) {
+	NODE *p = parent->child;
 	printf("search for %s in parent DIR\n", name);
 	if (p == NULL) {
 		return 0;
@@ -34,7 +34,7 @@ NODE *searchChild(NODE * parent, char *name) {
 }
 
 int removeChild(NODE *parent, char *pathname) {
-	NODE *p, q*;
+	NODE *p, *q;
 
 	p = q = parent->child;
 	if (p == 0) {
