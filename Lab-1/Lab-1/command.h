@@ -40,19 +40,23 @@ int rmdir(char *pathname);
 int cd(char *pathname);
 
 //ls
-int ls();
+int ls(char *pathname);
 
 //pwd
 int pwd();
 
 //creat <filename>
-int creat(char *filename);
+int creat(char *pathname);
 
 //rm <filename>
-int rm(char *filename);
+int rm(char *pathname);
 
 //save <filename>
 int save(char *filename);
+
+int saveTree(NODE* parent, FILE *outfile);
+
+int printPath(NODE* path, FILE *outfile);
 
 //reload <filename>
 int reload(char *filename);
