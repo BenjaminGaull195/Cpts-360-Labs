@@ -183,22 +183,75 @@ int rmdir(char *pathname) {
 
 //cd <pathname>
 int cd(char *pathname) {
+	//!strcmp(pathname, ".") || !strcmp(pathname, "..")
+	char *s;
+	NODE *p;
+
+	if (pathname[0] == '/') {
+		start = root;
+	}
+	else {
+		start = cwd;
+	}
+	p = start;
+	s = strtok(pathname, "/");
+	while (s) {
+		if (!strcmp(pathname), "..") {
+			p = start->parent;
+		}
+		else if (!strcmp(pathname, ".")) {
+			p = start;
+		}
+		else {
+			p = searchChild(p, pathname, "D");
+
+		}
+	}
+	cwd = p;
+	return 0;
 
 }
 
 //ls <pathname>
 int ls(char *pathname) {
-	NODE *p = cwd->child;
+	NODE *p;
+	char *s;
+
+	if (pathname[0] == '/') {
+		start = root;
+	}
+	else {
+		start = cwd;
+	}
+
+	s = strtok(pathname, "/");
+	while (s) {
+		start = searchChild(start, s, 'D');
+		s = strtok(0, "/");
+	}
+	if (!start) {
+		p = start->child;
+		printf("Contents of %s:", pathname);
+		while (p) {
+			printf("\t%c %s\n", p->type, p->name);
+			p = p->sibling;
+		}
+		return 0;
+	}
+	return -1;
+
+	/*NODE *p = cwd->child;
 	printf("CWD contents: \n");
 	while (p) {
 		printf("\t%c %s\n", p->type, p->name);
 		p = p->sibling;
-	}
+	}*/
 }
 
 //pwd
 int pwd() {
-	
+	printPath(cwd);
+	putchar('\n');
 
 }
 
@@ -325,21 +378,36 @@ int save(char *filename) {
 }
 
 int saveTree(NODE* parent, FILE *outfile) {
-	fprintf(outfile, "%c %s", parent->type, printPath(parent->parent, outfile));
+	fprintf(outfile, "%c %s", parent->type, savePath(parent->parent, outfile));
 	putc('\n', outfile);
 	saveTree(parent->child, outfile);
 	saveTree(parent->sibling, outfile);
 }
 
-int printPath(NODE* path, FILE *outfile) {
+int savePath(NODE* path, FILE *outfile) {
 	if (path->name != "/") {
-		printPath(path->parent, outfile);
+		savePath(path->parent, outfile);
 		if (path->name == "/") {
 			fprintf(outfile, "/");
 			return 0;
 		}
 		else {
 			fprintf(outfile, "%s/", path->name);
+			return 0;
+		}
+	}
+	return -1;
+}
+
+int printPath(NODE *path) {
+	if (path->name != "/") {
+		printPath(path->parent);
+		if (path->name == "/") {
+			printf("/");
+			return 0;
+		}
+		else {
+			printf("%s/", path->name);
 			return 0;
 		}
 	}

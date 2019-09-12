@@ -58,6 +58,8 @@ int saveTree(NODE* parent, FILE *outfile);
 
 int printPath(NODE* path, FILE *outfile);
 
+int printPath(NODE *path);
+
 //reload <filename>
 int reload(char *filename);
 
