@@ -206,8 +206,10 @@ int cd(char *pathname) {
 			p = searchChild(p, pathname, "D");
 
 		}
+		s = strtok(0, "/");
 	}
 	cwd = p;
+	printf("cd %s OK\n", pathname);
 	return 0;
 
 }
@@ -229,15 +231,17 @@ int ls(char *pathname) {
 		start = searchChild(start, s, 'D');
 		s = strtok(0, "/");
 	}
-	if (!start) {
+	if (start) {
 		p = start->child;
 		printf("Contents of %s:", pathname);
 		while (p) {
 			printf("\t%c %s\n", p->type, p->name);
 			p = p->sibling;
 		}
+		printf("ls %s OK\n", pathname);
 		return 0;
 	}
+	printf("Error: %s not found", pathname);
 	return -1;
 
 	/*NODE *p = cwd->child;
@@ -252,7 +256,8 @@ int ls(char *pathname) {
 int pwd() {
 	printPath(cwd);
 	putchar('\n');
-
+	printf("pwd OK\n");
+	return 0;
 }
 
 //creat <filename>
