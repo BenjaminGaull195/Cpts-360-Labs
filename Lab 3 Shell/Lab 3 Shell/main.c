@@ -2,8 +2,15 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <fcntl.h>
+#ifdef _WIN32 || _WIN64
+#include <io.h>
+#define _CRT_SECURE_NO_WARNINGS
+#pragma warning(disable : 4996)
+#else
+#include <unistd.h>
+#endif // _WIN32 || _WIN64
+
 
 
 //structs
@@ -90,7 +97,7 @@ int main(int argc, char *argv[], char *env[]) {
 		buf2 = strtok(line, " ");
 		count = 0;
 		p = (NODE *)malloc(sizeof(NODE));
-		printf("!! Debug Help !!\n")
+		printf("!! Debug Help !!\n");
 		while (buf2) {
 			if (!strcmp(buf2, "|")) {
 				push_stack(p);
@@ -235,7 +242,7 @@ int buildPipe(char **envp) {
 	int pid, count;
 	Cmd temp;
 	int pd[2];
-	char buf[256], *s;
+	char buf[256], *s = 0;
 
 	if (pipe_stack == NULL) {
 		return 0;
