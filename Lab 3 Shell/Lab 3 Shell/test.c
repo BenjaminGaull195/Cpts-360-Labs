@@ -146,7 +146,7 @@ char line[256] = { "\0" }, buf[256] = { "\0" }, *buf2;
 					//	printf("%s\n", strcmp(temp.cmd_line[count], ">>"));
 					//	printf("%s\n", strcmp(temp.cmd_line[count], "<"));
 
-
+						printf("%s\n", temp.cmd_line[count]);
 						//temp.cmd_line[count] = NULL;
                         if (!strcmp(temp.cmd_line[count], ">")) {
 							printf("Output Redirection\n");
@@ -170,7 +170,7 @@ char line[256] = { "\0" }, buf[256] = { "\0" }, *buf2;
 							}
 
                         }
-                        else {
+                        else if (!strcmp(temp.cmd_line[count], "<") {
 							printf("Input Redirection\n");
                             //close(0);
                             //open(temp.cmd_line[count + 1], O_RDONLY);
