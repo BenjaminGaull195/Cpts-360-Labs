@@ -5,8 +5,9 @@
 #include <fcntl.h>
 #ifdef _WIN32 || _WIN64
 #include <io.h>
+#include <process.h>
 #define _CRT_SECURE_NO_WARNINGS
-#pragma warning(disable : 4996)
+//#pragma warning(disable : 4996)
 #else
 #include <unistd.h>
 #endif // _WIN32 || _WIN64
