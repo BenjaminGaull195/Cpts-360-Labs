@@ -142,7 +142,7 @@ char line[256] = { "\0" }, buf[256] = { "\0" }, *buf2;
                 
                     if (!strcmp(temp.cmd_line[count], ">") || !strcmp(temp.cmd_line[count], ">>") || !strcmp(temp.cmd_line[count], "<")) {
 						printf("Debug: IO Redirection Present\n");
-						temp.cmd_line[count] = NULL;
+						//temp.cmd_line[count] = NULL;
                         if (!strcmp(temp.cmd_line[count], ">")) {
 							printf("Output Redirection\n");
                             close(1);
