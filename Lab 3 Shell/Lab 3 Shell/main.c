@@ -20,7 +20,7 @@ typedef struct node {
 //global variables
 
 NODE * pipe_stack = NULL;
-char *envp[], *paths[32] = { NULL };
+char *envptr, *paths[32] = { NULL };
 
 
 int main(int argc, char *argv[], char *env[]) {
@@ -33,7 +33,23 @@ int main(int argc, char *argv[], char *env[]) {
 	
 	//print and parse PATH environment variable
 	//strcpy(path, getenv("PATH"));
-	printf("%s", env[]);
+	envptr = getenv("PATH");
+	printf("%s", envptr);
+
+	//parce PATH
+	count = 0;
+	buf2 = strtok(envptr, ":");
+	while (buf2) {
+		if (strcmp(buf2, "")) {
+			paths[count] = buf2;
+			++count;
+		}
+		buf2 = strtok(NULL, ":");
+		if (!buf2) {
+			paths[count] = NULL;
+		}
+	}
+
 
 	//loop through shell
 	while (1) {
@@ -45,7 +61,7 @@ int main(int argc, char *argv[], char *env[]) {
 
 		//parse command string; build stack for I/O redirection/pipes
 		//sscanf(line, "%s %[^\n|]", arg[0], buf);
-		count = 0;
+		
 		buf2 = strtok(line, " ");
 		p = (NODE *)malloc(sizeof(NODE));
 		while (buf2) {
