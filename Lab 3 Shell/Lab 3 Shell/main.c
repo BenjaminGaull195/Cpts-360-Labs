@@ -21,7 +21,7 @@ typedef struct node {
 //global variables
 
 NODE * pipe_stack = NULL;
-char *envptr, *paths[32] = { NULL };
+char *envptr, *paths[32] = { NULL }, *arg[32] = { NULL };
 
 
 //function prototypes
@@ -37,11 +37,13 @@ int buildPipe(char **envp);
 //main
 
 int main(int argc, char *argv[], char *env[]) {
-	char line[256] = { "\0" }, *arg[32] = { {"\0"} }, buf[256] = { "\0" }, *buf2;
+	char line[256] = { "\0" }, buf[256] = { "\0" }, *buf2;
 	//char temp[3];
 	int isPiped = 0;// isIRedirect = 0, isORedirect = 0, isAppend = 0;
-	int count;
+	int count, pid;
 	NODE *p;
+	Cmd temp;
+
 
 	
 	//print and parse PATH environment variable
@@ -76,11 +78,11 @@ int main(int argc, char *argv[], char *env[]) {
 	//loop through shell
 	while (1) {
 		//get input
+
 		
 		printf("mysh $ "); 
 		fgets(line, 256, stdin); 
 		line[strlen(line) - 1] = 0; 
-		Cmd temp;
 
 		//parse command string; build stack for I/O redirection/pipes
 		//sscanf(line, "%s %[^\n|]", arg[0], buf);
@@ -106,9 +108,10 @@ int main(int argc, char *argv[], char *env[]) {
 		}
 		push_stack(p);
 
+		temp = peek_stack();
 
 		//execute command; build pipe; redirect output
-		if (!strcmp(arg[0], "cd")) {
+		if (!strcmp(temp.cmd_line[0], "cd")) {
 			if (strcmp(arg[0], "")) {
 				chdir(arg[1]);
 			}
@@ -116,7 +119,7 @@ int main(int argc, char *argv[], char *env[]) {
 				chdir(getenv("HOME"));
 			}
 		}
-		else if (!strcmp(arg[0], "exit")) {
+		else if (!strcmp(temp.cmd_line[0], "exit")) {
 			exit(0);
 		}
 		else if (isPiped) {	//pipe
@@ -124,17 +127,76 @@ int main(int argc, char *argv[], char *env[]) {
 		}
 		else {
 			temp = peek_stack();
-			for (count = 0; count < 32; ++count) {
+		/*	for (count = 0; count < 32; ++count) {
 				if (paths[count] != "\0") {
 					execve(paths[count], temp.cmd_line, env);
 				}
-			}
+			}*/
 			/*
 			if (!fork()) {
 
 				execve(arg, env);
 			}
 			*/
+
+			pid = fork();
+			if (pid) {		//parent
+				//configure pipe send
+				//close(pd[0]);
+				//close(1);
+				//dup(pd[1]);
+
+				return 0;
+
+			}
+			else {		//child
+				//configure I/O redirect
+
+
+				count = 0;
+				//parse command; handle io redirect
+				while (buf2) {
+					buf2 = temp.cmd_line[count];
+
+					if (buf2[0] == '>') {			//output redirect
+						close(1);
+						if (buf2[1] == '>') {		//append output redirect
+							++count;
+							open(buf2, O_APPEND, 0644);
+						}
+						else {
+							++count;
+							open(buf2, O_WRONLY, 0644);
+						}
+					}
+					else if (buf2[0] == '<') {		// input redirect
+						close(0);
+						++count;
+						open(buf2, O_RDONLY, 0644);
+					}
+					else {
+						++count;
+					}
+					
+				}
+				temp.cmd_line[count] = NULL;
+
+
+
+
+				//execute command
+				for (count = 0; count < 32; ++count) {
+					if (paths[count] != "\0") {
+						printf("Searching %s", paths[count]);
+						execve(paths[count], temp.cmd_line, env);
+					}
+				}
+			}
+
+
+
+
+
 		}
 		isPiped = 0;
 
@@ -202,30 +264,33 @@ int buildPipe(char **envp) {
 		close(0);
 		dup(pd[0]);
 
+		count = 0;
 		//parse command; handle io redirect
-		s = strtok(temp.cmd_line, " ");
+		
 		while (s) {
+			s = temp.cmd_line[count];
+
 			if (s[0] == '>') {			//output redirect
 				close(1);
 				if (s[1] == '>') {		//append output redirect
-					s = strtok(NULL, " ");
+					++count;
 					open(s, O_APPEND, 0644);
 				}
 				else {
-					s = strtok(NULL, " ");
+					++count;
 					open(s, O_WRONLY, 0644);
 				}
 			}
 			else if (s[0] == '<') {		// input redirect
 				close(0);
-				s = strtok(NULL, " ");
+				++count;
 				open(s, O_RDONLY, 0644);
 			}
 			else {
-				strcat(buf, s);
+				++count;
 			}
-			s = strtok(NULL, " ");
 		}
+		temp.cmd_line[count] = NULL;
 
 
 
@@ -233,7 +298,7 @@ int buildPipe(char **envp) {
 		//execute command
 		for (count = 0; count < 32; ++count) {
 			if (paths[count] != "\0") {
-
+				printf("Searching %s", paths[count]);
 				execve(paths[count], temp.cmd_line, envp);
 			}
 		}
