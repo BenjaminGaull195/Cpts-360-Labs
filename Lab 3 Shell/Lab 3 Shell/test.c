@@ -37,7 +37,7 @@ int main(int argc, char *argv[], char *env[]) {
 char line[256] = { "\0" }, buf[256] = { "\0" }, *buf2;
 	char appendBuf[128];
 	int isPiped = 0, isIRedirect = 0; //isORedirect = 0, isAppend = 0;
-	int count, pid, status;
+	int count, pid, status, fd;
 	NODE *p;
 	Cmd temp;
 
@@ -152,21 +152,33 @@ char line[256] = { "\0" }, buf[256] = { "\0" }, *buf2;
 							printf("Output Redirection\n");
                             //close(1);
                             //open(temp.cmd_line[count + 1], O_WRONLY, 0644);
-							if (dup2(1, open(temp.cmd_line[count + 1], O_WRONLY)) != -1) {
-								printf("fd Opened\n");
+							fd = open(temp.cmd_line[count + 1], O_WRONLY | O_CREAT);
+							if (fd != -1) {
+								if (dup2(1, fd) != -1) {
+									printf("fd Opened\n");
+								}
+								else {
+									printf("fd failed to open\n");
+								}
 							}
 							else {
-								printf("fd failed to open\n");
+								printf("fd faled to open");
 							}
                         }
                         else if (!strcmp(temp.cmd_line[count], ">>")) {
 							printf("Outfut Append Redirection\n");
                             //close(1);
-							if (dup2(1, open(temp.cmd_line[count + 1], O_APPEND)) != -1) {
-								printf("fd Opened\n");
+							fd = open(temp.cmd_line[count + 1], O_APPEND | O_CREAT);
+							if (fd != -1) {
+								if (dup2(1, fd) != -1) {
+									printf("fd Opened\n");
+								}
+								else {
+									printf("fd failed to open\n");
+								}
 							}
 							else {
-								printf("fd failed to open\n");
+								printf("fd faled to open");
 							}
 
                         }
@@ -174,8 +186,14 @@ char line[256] = { "\0" }, buf[256] = { "\0" }, *buf2;
 							printf("Input Redirection\n");
                             //close(0);
                             //open(temp.cmd_line[count + 1], O_RDONLY);
-							if (dup2( open(temp.cmd_line[count + 1], O_RDONLY), 0) != -1) {
-								printf("fd Opened\n");
+							fd = open(temp.cmd_line[count + 1], O_RDONLY);
+							if (fd != -1) {
+								if (dup2(fd, 0) != -1) {
+									printf("fd Opened\n");
+								}
+								else {
+									printf("fd failed to open\n");
+								}
 							}
 							else {
 								printf("fd failed to open\n");
