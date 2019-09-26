@@ -90,6 +90,7 @@ int main(int argc, char *argv[], char *env[]) {
 		buf2 = strtok(line, " ");
 		count = 0;
 		p = (NODE *)malloc(sizeof(NODE));
+		printf("!! Debug Help !!\n")
 		while (buf2) {
 			if (!strcmp(buf2, "|")) {
 				push_stack(p);
@@ -97,6 +98,7 @@ int main(int argc, char *argv[], char *env[]) {
 				isPiped = 1;
 			}
 			else {
+				printf("%s\n", buf2);
 				//strcat(p->data.cmd_line, " ");
 				//strcat(p->data.cmd_line, buf2);
 				//strcat(p->data.cmd_line, " ");
@@ -124,6 +126,7 @@ int main(int argc, char *argv[], char *env[]) {
 		}
 		else if (isPiped) {	//pipe
 			buildPipe(env);
+			wait();
 		}
 		else {
 			temp = peek_stack();
@@ -145,7 +148,7 @@ int main(int argc, char *argv[], char *env[]) {
 				//close(pd[0]);
 				//close(1);
 				//dup(pd[1]);
-
+				wait();
 				return 0;
 
 			}
@@ -184,7 +187,7 @@ int main(int argc, char *argv[], char *env[]) {
 				//execute command
 				for (count = 0; count < 32; ++count) {
 					if (paths[count] != "\0") {
-						printf("Searching %s\n", paths[count]);
+						//printf("Searching %s\n", paths[count]);
 						execve(strcat(strcat(paths[count], "/"), temp.cmd_line[0]), temp.cmd_line, env);
 					}
 				}
@@ -199,7 +202,7 @@ int main(int argc, char *argv[], char *env[]) {
 
 
 		//wait for command to finish execution:
-		wait();
+		//wait();
 	}
 
 }
@@ -236,6 +239,9 @@ int buildPipe(char **envp) {
 
 	if (pipe_stack == NULL) {
 		return 0;
+	}
+	else {
+		buildPipe(envp);
 	}
 
 	//get stack item
