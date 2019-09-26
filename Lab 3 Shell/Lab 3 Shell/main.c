@@ -80,7 +80,7 @@ int main(int argc, char *argv[], char *env[]) {
 		//get input
 
 		
-		printf("mysh $ "); 
+		printf("mysh: $ "); 
 		fgets(line, 256, stdin); 
 		line[strlen(line) - 1] = 0; 
 
@@ -180,10 +180,7 @@ int main(int argc, char *argv[], char *env[]) {
 					
 				}
 				temp.cmd_line[count] = NULL;
-
-
-
-
+				
 				//execute command
 				for (count = 0; count < 32; ++count) {
 					if (paths[count] != "\0") {
