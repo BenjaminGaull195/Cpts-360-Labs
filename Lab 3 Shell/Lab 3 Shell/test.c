@@ -154,7 +154,8 @@ char line[256] = { "\0" }, buf[256] = { "\0" }, *buf2;
                             //open(temp.cmd_line[count + 1], O_WRONLY, 0644);
 							fd = open(temp.cmd_line[count + 1], O_WRONLY | O_CREAT);
 							if (fd != -1) {
-								if (dup2(fd, 1) != -1) {
+								printf("fd opened\n");
+								if (dup2(1, fd) != -1) {
 									printf("fd Opened\n");
 								}
 								else {
@@ -170,7 +171,8 @@ char line[256] = { "\0" }, buf[256] = { "\0" }, *buf2;
                             //close(1);
 							fd = open(temp.cmd_line[count + 1], O_APPEND | O_CREAT);
 							if (fd != -1) {
-								if (dup2(fd, 1) != -1) {
+								printf("fd opened\n")
+								if (dup2(1, fd) != -1) {
 									printf("fd Opened\n");
 								}
 								else {
@@ -188,7 +190,7 @@ char line[256] = { "\0" }, buf[256] = { "\0" }, *buf2;
                             //open(temp.cmd_line[count + 1], O_RDONLY);
 							fd = open(temp.cmd_line[count + 1], O_RDONLY);
 							if (fd != -1) {
-								if (dup2(fd, 0) != -1) {
+								if (dup2(0, fd) != -1) {
 									printf("fd Opened\n");
 								}
 								else {
