@@ -141,14 +141,15 @@ char line[256] = { "\0" }, buf[256] = { "\0" }, *buf2;
                 while (temp.cmd_line[count]) {
                 
                     if (!strcmp(temp.cmd_line[count], ">") || !strcmp(temp.cmd_line[count], ">>") || !strcmp(temp.cmd_line[count], "<")) {
-                        temp.cmd_line[count] = NULL;
+						printf("Debug: IO Redirection Present\n");
+						temp.cmd_line[count] = NULL;
                         if (!strcmp(temp.cmd_line[count], ">")) {
                             close(1);
                             open(temp.cmd_line[count + 1], O_WRONLY, 0644);
                         }
                         else if (!strcmp(temp.cmd_line[count], ">>")) {
                             close(1);
-							printf("Error %s\n", open(temp.cmd_line[count + 1], O_APPEND, 0644) == -1 ? "Could not open file" : "No Error" );
+                            open(temp.cmd_line[count + 1], O_APPEND, 0644);
                         }
                         else {
                             close(0);
