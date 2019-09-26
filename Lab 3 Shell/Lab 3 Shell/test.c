@@ -171,7 +171,7 @@ char line[256] = { "\0" }, buf[256] = { "\0" }, *buf2;
                             //close(1);
 							fd = open(temp.cmd_line[count + 1], O_APPEND | O_CREAT);
 							if (fd != -1) {
-								printf("fd opened\n")
+								printf("fd opened\n");
 								if (dup2(1, fd) != -1) {
 									printf("fd Opened\n");
 								}
