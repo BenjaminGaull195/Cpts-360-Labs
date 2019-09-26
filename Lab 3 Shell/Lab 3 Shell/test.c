@@ -113,98 +113,114 @@ char line[256] = { "\0" }, buf[256] = { "\0" }, *buf2;
         //printf("Debug: get command\n");
 		temp = peek_stack();
 
-        pid = fork();
-
-        if(pid) {
-            //printf("Entered Parent\n");
-            wait();
-        }
+        if (!strcmp(temp.cmd_line[0], "cd")) {
+			if (strcmp(arg[0], "")) {
+				chdir(arg[1]);
+			}
+			else {
+				chdir(getenv("HOME"));
+			}
+		}
+		else if (!strcmp(temp.cmd_line[0], "exit")) {
+			exit(0);
+		}
         else {
-            //printf("Entered child\n");
-            //handle I/O Redirection
-            //count = 0;
-            buf2 = temp.cmd_line[count];
-            while (buf2) {
-				buf2 = temp.cmd_line[count];
+            pid = fork();
 
-                if(isIRedirect) {
-                    temp.cmd_line[count] = NULL;
-                }
-				if (!strcmp(buf2, ">") || !strcmp(buf2, ">>") ) {
-					if (!strcmp(buf2, ">")) {			//output redirect
-						isIRedirect = 1;
-                    	temp.cmd_line[count] = NULL;
-                    	close(1);
-						if (!strcmp(buf2, ">>")) {		//append output redirect
-							++count;
-							open(temp.cmd_line[count], O_APPEND, 0644);
-							temp.cmd_line[count] = NULL;
-						}
-						else {
-                     		++count;
-							open(temp.cmd_line[count], O_WRONLY, 0644);
-							temp.cmd_line[count] = NULL;
-						}
-					}
+            if(pid) {
+                //printf("Entered Parent\n");
+               wait();
+            }
+            else {
+                //printf("Entered child\n");
+                //handle I/O Redirection
+                //count = 0;
+
+                /*
+                buf2 = temp.cmd_line[count];
+                while (buf2) {
+				    buf2 = temp.cmd_line[count];
+
+                    if(isIRedirect) {
+                        temp.cmd_line[count] = NULL;
+                    }
+				    if (!strcmp(buf2, ">") || !strcmp(buf2, ">>") ) {
+				    	if (!strcmp(buf2, ">")) {			//output redirect
+				    		isIRedirect = 1;
+                        	temp.cmd_line[count] = NULL;
+                        	close(1);
+				    		if (!strcmp(buf2, ">>")) {		//append output redirect
+				    			++count;
+				    			open(temp.cmd_line[count], O_APPEND, 0644);
+			        			temp.cmd_line[count] = NULL;
+				    		}
+				    		else {
+                         		++count;
+				    			open(temp.cmd_line[count], O_WRONLY, 0644);
+				    			temp.cmd_line[count] = NULL;
+				    		}
+				    	}
                     
 					
-				}
-				else if (strcmp(buf2, "<")) {		// input redirect
-					isIRedirect = 1;
-                    close(0);
-                    temp.cmd_line[count] = NULL;
-					++count;
-					open(temp.cmd_line[count], O_RDONLY, 0644);
-                    temp.cmd_line[count] = NULL;
-				}
-				else {
-					++count;
-				}
-				
-			}
-			//temp.cmd_line[count] = NULL;
-            count = 0;
-            while (temp.cmd_line[count]) {
-                
-                if (!strcmp(temp.cmd_line[count], ">") || !strcmp(temp.cmd_line[count], ">>") || !strcmp(temp.cmd_line[count], "<")) {
-                    temp.cmd_line[count] = NULL;
-                    if (!strcmp(temp.cmd_line[count], ">")) {
-                        close(1);
-                        open(temp.cmd_line[count], O_WRONLY, 0644);
-                    }
-                    else if (!strcmp(temp.cmd_line[count], ">>")) {
-                        close(1);
-                        open(temp.cmd_line[count], O_APPEND, 0644);
-                    }
-                    else {
+				    }
+				    else if (strcmp(buf2, "<")) {		// input redirect
+				    	isIRedirect = 1;
                         close(0);
-                        open(temp.cmd_line[count + 1], O_RDONLY, 0644);
-                    }
-
-
-                    while (temp.cmd_line[count]) {
                         temp.cmd_line[count] = NULL;
-                        ++count;
+				    	++count;
+				    	open(temp.cmd_line[count], O_RDONLY, 0644);
+                        temp.cmd_line[count] = NULL;
+			    	}
+			    	else {
+			    		++count;
+			    	}
+				
+			    }
+                */
+			    //temp.cmd_line[count] = NULL;
+                count = 0;
+                while (temp.cmd_line[count]) {
+                
+                    if (!strcmp(temp.cmd_line[count], ">") || !strcmp(temp.cmd_line[count], ">>") || !strcmp(temp.cmd_line[count], "<")) {
+                        temp.cmd_line[count] = NULL;
+                        if (!strcmp(temp.cmd_line[count], ">")) {
+                            close(1);
+                            open(temp.cmd_line[count + 1], O_WRONLY, 0644);
+                        }
+                        else if (!strcmp(temp.cmd_line[count], ">>")) {
+                            close(1);
+                            open(temp.cmd_line[count + 1], O_APPEND, 0644);
+                        }
+                        else {
+                            close(0);
+                            open(temp.cmd_line[count + 1], O_RDONLY);
+                        }
+
+
+                        while (temp.cmd_line[count]) {
+                            temp.cmd_line[count] = NULL;
+                            ++count;
+                        }
                     }
+                    printf("%s\n", temp.cmd_line[count]);
+                    ++count;
                 }
-                printf("%s\n", temp.cmd_line[count]);
-                ++count;
+                
+
+                //printf("Debug: ready to execute\n");
+                for (count = 0; count < 32 && paths[count]; ++count) {
+		           if (paths[count] != NULL) {
+   		              	printf("Searching %s\n", paths[count]);
+
+		               	strcpy(appendBuf, paths[count]);
+		            	strcat(appendBuf, "/");
+		            	strcat(appendBuf, temp.cmd_line[0]);
+		            	execve(appendBuf, temp.cmd_line, env);
+		            }
+	           }
             }
-
-
-            //printf("Debug: ready to execute\n");
-            for (count = 0; count < 32 && paths[count]; ++count) {
-		        if (paths[count] != NULL) {
-   		        	printf("Searching %s\n", paths[count]);
-
-		           	strcpy(appendBuf, paths[count]);
-		        	strcat(appendBuf, "/");
-		        	strcat(appendBuf, temp.cmd_line[0]);
-		        	execve(appendBuf, temp.cmd_line, env);
-		        }
-	        }
+            isIRedirect = isPiped = 0;
         }
-        isIRedirect = isPiped = 0;
     }
 
 }

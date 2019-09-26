@@ -134,7 +134,7 @@ int main(int argc, char *argv[], char *env[]) {
 		}
 		else if (isPiped) {	//pipe
 			pid = buildPipe(env);
-			waitpid(pid, &status, 0);
+			wait();
 		}
 		else {
 			temp = peek_stack();
@@ -158,7 +158,7 @@ int main(int argc, char *argv[], char *env[]) {
 				//close(1);
 				//dup(pd[1]);
 				printf("Debug: Entered Parent\n");
-				wait());
+				wait();
 				return 0;
 
 			}
@@ -193,7 +193,7 @@ int main(int argc, char *argv[], char *env[]) {
                     
 					
 				}
-				else if (bstrcmp(buf2, "<")) {		// input redirect
+				else if (strcmp(buf2, "<")) {		// input redirect
 					isIRedirect = 1;
                     close(0);
                     temp.cmd_line[count] = NULL;
