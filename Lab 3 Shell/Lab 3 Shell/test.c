@@ -113,71 +113,30 @@ char line[256] = { "\0" }, buf[256] = { "\0" }, *buf2;
         //printf("Debug: get command\n");
 		temp = peek_stack();
 
-        if (!strcmp(temp.cmd_line[0], "cd")) {
-			if (strcmp(arg[0], "")) {
-				chdir(arg[1]);
+        if (!strcmp(temp.cmd_line[0], "cd")) {			//hadnle cd
+			if (strcmp(temp.cmd_line[1], "")) {
+				chdir(temp.cmd_line[1]);
 			}
 			else {
 				chdir(getenv("HOME"));
 			}
 		}
-		else if (!strcmp(temp.cmd_line[0], "exit")) {
+		else if (!strcmp(temp.cmd_line[0], "exit")) {	//handle exit
 			exit(0);
 		}
-        else {
+        else {											//handle single commands
+			
             pid = fork();
 
             if(pid) {
                 //printf("Entered Parent\n");
-               wait();
+                wait();
             }
             else {
                 //printf("Entered child\n");
                 //handle I/O Redirection
                 //count = 0;
 
-                /*
-                buf2 = temp.cmd_line[count];
-                while (buf2) {
-				    buf2 = temp.cmd_line[count];
-
-                    if(isIRedirect) {
-                        temp.cmd_line[count] = NULL;
-                    }
-				    if (!strcmp(buf2, ">") || !strcmp(buf2, ">>") ) {
-				    	if (!strcmp(buf2, ">")) {			//output redirect
-				    		isIRedirect = 1;
-                        	temp.cmd_line[count] = NULL;
-                        	close(1);
-				    		if (!strcmp(buf2, ">>")) {		//append output redirect
-				    			++count;
-				    			open(temp.cmd_line[count], O_APPEND, 0644);
-			        			temp.cmd_line[count] = NULL;
-				    		}
-				    		else {
-                         		++count;
-				    			open(temp.cmd_line[count], O_WRONLY, 0644);
-				    			temp.cmd_line[count] = NULL;
-				    		}
-				    	}
-                    
-					
-				    }
-				    else if (strcmp(buf2, "<")) {		// input redirect
-				    	isIRedirect = 1;
-                        close(0);
-                        temp.cmd_line[count] = NULL;
-				    	++count;
-				    	open(temp.cmd_line[count], O_RDONLY, 0644);
-                        temp.cmd_line[count] = NULL;
-			    	}
-			    	else {
-			    		++count;
-			    	}
-				
-			    }
-                */
-			    //temp.cmd_line[count] = NULL;
                 count = 0;
                 while (temp.cmd_line[count]) {
                 

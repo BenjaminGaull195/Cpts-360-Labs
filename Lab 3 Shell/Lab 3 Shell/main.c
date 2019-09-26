@@ -122,14 +122,14 @@ int main(int argc, char *argv[], char *env[]) {
 
 		//execute command; build pipe; redirect output
 		if (!strcmp(temp.cmd_line[0], "cd")) {
-			if (strcmp(arg[0], "")) {
-				chdir(arg[1]);
+			if (strcmp(temp.cmd_line[1], "")) {
+				chdir(temp.cmd_line[1]);
 			}
 			else {
 				chdir(getenv("HOME"));
 			}
 		}
-		else if (!strcmp(temp.cmd_line[0], "exit")) {
+		else if (!strcmp(temp.cmd_line[0], "exit")) {	//handle exit
 			exit(0);
 		}
 		else if (isPiped) {	//pipe
