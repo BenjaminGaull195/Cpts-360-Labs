@@ -152,7 +152,7 @@ char line[256] = { "\0" }, buf[256] = { "\0" }, *buf2;
 							printf("Output Redirection\n");
                             //close(1);
                             //open(temp.cmd_line[count + 1], O_WRONLY, 0644);
-							if (dup2(1, open(temp.cmd_line[count + 1], O_WRONLY, 0644)) != -1) {
+							if (dup2(1, open(temp.cmd_line[count + 1], O_WRONLY)) != -1) {
 								printf("fd Opened\n");
 							}
 							else {
@@ -162,7 +162,7 @@ char line[256] = { "\0" }, buf[256] = { "\0" }, *buf2;
                         else if (!strcmp(temp.cmd_line[count], ">>")) {
 							printf("Outfut Append Redirection\n");
                             //close(1);
-							if (dup2(1, open(temp.cmd_line[count + 1], O_APPEND, 0644)) != -1) {
+							if (dup2(1, open(temp.cmd_line[count + 1], O_APPEND)) != -1) {
 								printf("fd Opened\n");
 							}
 							else {
