@@ -148,10 +148,11 @@ char line[256] = { "\0" }, buf[256] = { "\0" }, *buf2;
                         }
                         else if (!strcmp(temp.cmd_line[count], ">>")) {
                             close(1);
-                            open(temp.cmd_line[count + 1], O_APPEND, 0644);
+							printf("Error %s\n", open(temp.cmd_line[count + 1], O_APPEND, 0644) == -1 ? "Could not open file" : "No Error" );
                         }
                         else {
                             close(0);
+
                             open(temp.cmd_line[count + 1], O_RDONLY);
                         }
 
