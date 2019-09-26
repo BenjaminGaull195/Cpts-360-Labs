@@ -46,9 +46,9 @@ int buildPipe(char **envp);
 
 int main(int argc, char *argv[], char *env[]) {
 	char line[256] = { "\0" }, buf[256] = { "\0" }, *buf2;
-	//char temp[3];
-	int isPiped = 0;// isIRedirect = 0, isORedirect = 0, isAppend = 0;
-	int count, pid;
+	char *appendBuf;
+	int isPiped = 0, isIRedirect = 0;//, isORedirect = 0, isAppend = 0;
+	int count, pid, status;
 	NODE *p;
 	Cmd temp;
 
@@ -133,11 +133,12 @@ int main(int argc, char *argv[], char *env[]) {
 			exit(0);
 		}
 		else if (isPiped) {	//pipe
-			buildPipe(env);
-			wait();
+			pid = buildPipe(env);
+			waitpid(pid, &status, 0);
 		}
 		else {
 			temp = peek_stack();
+			pop_stack();
 		/*	for (count = 0; count < 32; ++count) {
 				if (paths[count] != "\0") {
 					execve(paths[count], temp.cmd_line, env);
@@ -156,48 +157,67 @@ int main(int argc, char *argv[], char *env[]) {
 				//close(pd[0]);
 				//close(1);
 				//dup(pd[1]);
-				wait();
+				printf("Debug: Entered Parent\n");
+				wait());
 				return 0;
 
 			}
 			else {		//child
 				//configure I/O redirect
-
+				printf("Debug: entered child");
 
 				count = 0;
 				//parse command; handle io redirect
 				while (buf2) {
 					buf2 = temp.cmd_line[count];
 
-					if (buf2[0] == '>') {			//output redirect
-						close(1);
-						if (buf2[1] == '>') {		//append output redirect
+                if(isIRedirect) {
+                    temp.cmd_line[count] = NULL;
+                }
+				if (!strcmp(buf2, ">") || !strcmp(buf2, ">>") ) {
+					if (!strcmp(buf2, ">")) {			//output redirect
+						isIRedirect = 1;
+                    	temp.cmd_line[count] = NULL;
+                    	close(1);
+						if (!strcmp(buf2, ">>")) {		//append output redirect
 							++count;
-							open(buf2, O_APPEND, 0644);
+							open(temp.cmd_line[count], O_APPEND, 0644);
+							temp.cmd_line[count] = NULL;
 						}
 						else {
-							++count;
-							open(buf2, O_WRONLY, 0644);
+                     		++count;
+							open(temp.cmd_line[count], O_WRONLY, 0644);
+							temp.cmd_line[count] = NULL;
 						}
 					}
-					else if (buf2[0] == '<') {		// input redirect
-						close(0);
-						++count;
-						open(buf2, O_RDONLY, 0644);
-					}
-					else {
-						++count;
-					}
+                    
+					
+				}
+				else if (bstrcmp(buf2, "<")) {		// input redirect
+					isIRedirect = 1;
+                    close(0);
+                    temp.cmd_line[count] = NULL;
+					++count;
+					open(temp.cmd_line[count], O_RDONLY, 0644);
+                    temp.cmd_line[count] = NULL;
+				}
+				else {
+					++count;
+				}
 					
 				}
 				temp.cmd_line[count] = NULL;
 				
 				//execute command
 				for (count = 0; count < 32; ++count) {
-					if (paths[count] != "\0") {
-						//printf("Searching %s\n", paths[count]);
-						execve(strcat(strcat(paths[count], "/"), temp.cmd_line[0]), temp.cmd_line, env);
-					}
+					if (paths[count] != NULL) {
+   		        		printf("Searching %s\n", paths[count]);
+
+		           		strcpy(appendBuf, paths[count]);
+		        		strcat(appendBuf, "/");
+		        		strcat(appendBuf, temp.cmd_line[0]);
+		        		execve(appendBuf, temp.cmd_line, env);
+		        	}
 				}
 			}
 
@@ -243,7 +263,7 @@ int buildPipe(char **envp) {
 	int pid, count;
 	Cmd temp;
 	int pd[2];
-	char buf[256], *s = 0;
+	char buf[256], *s = 0, *appendBuf;
 
 	if (pipe_stack == NULL) {
 		return 0;
@@ -266,7 +286,7 @@ int buildPipe(char **envp) {
 		close(pd[0]);
 		close(1);
 		dup(pd[1]);
-		return 0;
+		return pid;
 
 	}
 	else {		//child
@@ -309,9 +329,12 @@ int buildPipe(char **envp) {
 		//execute command
 		for (count = 0; count < 32; ++count) {
 			if (paths[count] != NULL) {
-				printf("Searching %s\n", paths[count]);
-			
-				execve(strcat(strcat(paths[count],"/"),temp.cmd_line[0]), temp.cmd_line, envp);
+   				printf("Searching %s\n", paths[count]);
+
+				strcpy(appendBuf, paths[count]);
+				strcat(appendBuf, "/");
+				strcat(appendBuf, temp.cmd_line[0]);
+				execve(appendBuf, temp.cmd_line, envp);
 			}
 		}
 	}
