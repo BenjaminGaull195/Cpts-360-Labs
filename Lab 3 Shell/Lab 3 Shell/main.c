@@ -48,7 +48,7 @@ int main(int argc, char *argv[], char *env[]) {
 	char line[256] = { "\0" }, buf[256] = { "\0" }, *buf2;
 	char *appendBuf;
 	int isPiped = 0, isIRedirect = 0;//, isORedirect = 0, isAppend = 0;
-	int count, pid, status;
+	int count, pid, status, fd;
 	NODE *p;
 	Cmd temp;
 
@@ -99,17 +99,15 @@ int main(int argc, char *argv[], char *env[]) {
 		count = 0;
 		p = (NODE *)malloc(sizeof(NODE));
 		printf("!! Debug Help !!\n");
-		while (buf2) {
+		while (buf2) {	//push cmd to stack for processing
 			if (!strcmp(buf2, "|")) {
 				push_stack(p);
 				p = (NODE *)malloc(sizeof(NODE));
 				isPiped = 1;
 			}
-			else {
+			else {	//add str to cmd argv
 				printf("%s\n", buf2);
-				//strcat(p->data.cmd_line, " ");
-				//strcat(p->data.cmd_line, buf2);
-				//strcat(p->data.cmd_line, " ");
+				
 				p->data.cmd_line[count] = buf2;
 				++count;
 			}
@@ -152,79 +150,106 @@ int main(int argc, char *argv[], char *env[]) {
 			*/
 
 			pid = fork();
-			if (pid) {		//parent
-				//configure pipe send
-				//close(pd[0]);
-				//close(1);
-				//dup(pd[1]);
-				printf("Debug: Entered Parent\n");
-				wait();
-				return 0;
 
+			if (pid) {
+				//printf("Entered Parent\n");
+				wait();
 			}
-			else {		//child
-				//configure I/O redirect
-				printf("Debug: entered child");
+			else {
+				//printf("Entered child\n");
+				//handle I/O Redirection
+				//count = 0;
 
 				count = 0;
-				//parse command; handle io redirect
-				while (buf2) {
-					buf2 = temp.cmd_line[count];
+				while (temp.cmd_line[count]) {
 
-                if(isIRedirect) {
-                    temp.cmd_line[count] = NULL;
-                }
-				if (!strcmp(buf2, ">") || !strcmp(buf2, ">>") ) {
-					if (!strcmp(buf2, ">")) {			//output redirect
-						isIRedirect = 1;
-                    	temp.cmd_line[count] = NULL;
-                    	close(1);
-						if (!strcmp(buf2, ">>")) {		//append output redirect
-							++count;
-							open(temp.cmd_line[count], O_APPEND, 0644);
-							temp.cmd_line[count] = NULL;
+					if (!strcmp(temp.cmd_line[count], ">") || !strcmp(temp.cmd_line[count], ">>") || !strcmp(temp.cmd_line[count], "<")) {
+						printf("Debug: Possible IO Redirection Present\n");
+						//printf("%s\n", temp.cmd_line[count]);
+					//	printf("%s\n", strcmp(temp.cmd_line[count], ">"));
+					//	printf("%s\n", strcmp(temp.cmd_line[count], ">>"));
+					//	printf("%s\n", strcmp(temp.cmd_line[count], "<"));
+
+						//temp.cmd_line[count] = NULL;
+						if (!strcmp(temp.cmd_line[count], ">")) {
+							printf("Output Redirection\n");
+							//close(1);
+							//open(temp.cmd_line[count + 1], O_WRONLY, 0644);
+							fd = open(temp.cmd_line[count + 1], O_WRONLY | O_CREAT);
+							if (fd != -1) {
+								printf("fd opened\n");
+								if (dup2(1, fd) != -1) {
+									printf("fd Opened\n");
+								}
+								else {
+									printf("fd failed to open\n");
+								}
+							}
+							else {
+								printf("fd faled to open");
+							}
 						}
-						else {
-                     		++count;
-							open(temp.cmd_line[count], O_WRONLY, 0644);
+						else if (!strcmp(temp.cmd_line[count], ">>")) {
+							printf("Outfut Append Redirection\n");
+							//close(1);
+							fd = open(temp.cmd_line[count + 1], O_APPEND | O_CREAT);
+							if (fd != -1) {
+								printf("fd opened\n");
+								if (dup2(1, fd) != -1) {
+									printf("fd Opened\n");
+								}
+								else {
+									printf("fd failed to open\n");
+								}
+							}
+							else {
+								printf("fd faled to open");
+							}
+
+						}
+						else if (!strcmp(temp.cmd_line[count], "<")) {
+							printf("Input Redirection\n");
+							//close(0);
+							//open(temp.cmd_line[count + 1], O_RDONLY);
+							fd = open(temp.cmd_line[count + 1], O_RDONLY);
+							if (fd != -1) {
+								printf("fd opened\n");
+								if (dup2(0, fd) != -1) {
+									printf("fd Opened\n");
+								}
+								else {
+									printf("fd failed to open\n");
+								}
+							}
+							else {
+								printf("fd failed to open\n");
+							}
+						}
+
+
+						while (temp.cmd_line[count]) {
 							temp.cmd_line[count] = NULL;
+							++count;
 						}
 					}
-                    
-					
-				}
-				else if (strcmp(buf2, "<")) {		// input redirect
-					isIRedirect = 1;
-                    close(0);
-                    temp.cmd_line[count] = NULL;
-					++count;
-					open(temp.cmd_line[count], O_RDONLY, 0644);
-                    temp.cmd_line[count] = NULL;
-				}
-				else {
+					printf("%s\n", temp.cmd_line[count]);
 					++count;
 				}
-					
-				}
-				temp.cmd_line[count] = NULL;
-				
-				//execute command
-				for (count = 0; count < 32; ++count) {
-					if (paths[count] != NULL) {
-   		        		printf("Searching %s\n", paths[count]);
 
-		           		strcpy(appendBuf, paths[count]);
-		        		strcat(appendBuf, "/");
-		        		strcat(appendBuf, temp.cmd_line[0]);
-		        		execve(appendBuf, temp.cmd_line, env);
-		        	}
+
+				//printf("Debug: ready to execute\n");
+				for (count = 0; count < 32 && paths[count]; ++count) {
+					if (paths[count] != NULL) {
+						printf("Searching %s\n", paths[count]);
+
+						strcpy(appendBuf, paths[count]);
+						strcat(appendBuf, "/");
+						strcat(appendBuf, temp.cmd_line[0]);
+						execve(appendBuf, temp.cmd_line, env);
+					}
 				}
 			}
-
-
-
-
-
+			isIRedirect = isPiped = 0;
 		}
 		isPiped = 0;
 
@@ -260,9 +285,9 @@ Cmd peek_stack() {
 
 
 int buildPipe(char **envp) {
-	int pid, count;
+	int pid, count, isRedirect, isPiped;
 	Cmd temp;
-	int pd[2];
+	int pd[2], fd;
 	char buf[256], *s = 0, *appendBuf;
 
 	if (pipe_stack == NULL) {
@@ -298,38 +323,90 @@ int buildPipe(char **envp) {
 		count = 0;
 		//parse command; handle io redirect
 		
-		while (s) {
-			s = temp.cmd_line[count];
+	
+		//printf("Entered child\n");
+		//handle I/O Redirection
+		//count = 0;
+		while (temp.cmd_line[count]) {
 
-			if (s[0] == '>') {			//output redirect
-				close(1);
-				if (s[1] == '>') {		//append output redirect
-					++count;
-					open(s, O_APPEND, 0644);
+			if (!strcmp(temp.cmd_line[count], ">") || !strcmp(temp.cmd_line[count], ">>") || !strcmp(temp.cmd_line[count], "<")) {
+				printf("Debug: Possible IO Redirection Present\n");
+				//printf("%s\n", temp.cmd_line[count]);
+			//	printf("%s\n", strcmp(temp.cmd_line[count], ">"));
+			//	printf("%s\n", strcmp(temp.cmd_line[count], ">>"));
+			//	printf("%s\n", strcmp(temp.cmd_line[count], "<"));
+
+				//temp.cmd_line[count] = NULL;
+				if (!strcmp(temp.cmd_line[count], ">")) {
+					printf("Output Redirection\n");
+					//close(1);
+					//open(temp.cmd_line[count + 1], O_WRONLY, 0644);
+					fd = open(temp.cmd_line[count + 1], O_WRONLY | O_CREAT);
+					if (fd != -1) {
+						printf("fd opened\n");
+						if (dup2(1, fd) != -1) {
+							printf("fd Opened\n");
+						}
+						else {
+							printf("fd failed to open\n");
+						}
+					}
+					else {
+						printf("fd faled to open");
+					}
 				}
-				else {
+				else if (!strcmp(temp.cmd_line[count], ">>")) {
+					printf("Outfut Append Redirection\n");
+					//close(1);
+					fd = open(temp.cmd_line[count + 1], O_APPEND | O_CREAT);
+					if (fd != -1) {
+						printf("fd opened\n");
+						if (dup2(1, fd) != -1) {
+							printf("fd Opened\n");
+						}
+						else {
+							printf("fd failed to open\n");
+						}
+					}
+					else {
+						printf("fd faled to open");
+					}
+
+				}
+				else if (!strcmp(temp.cmd_line[count], "<")) {
+					printf("Input Redirection\n");
+					//close(0);
+					//open(temp.cmd_line[count + 1], O_RDONLY);
+					fd = open(temp.cmd_line[count + 1], O_RDONLY);
+					if (fd != -1) {
+						printf("fd opened\n");
+						if (dup2(0, fd) != -1) {
+							printf("fd Opened\n");
+						}
+						else {
+							printf("fd failed to open\n");
+						}
+					}
+					else {
+						printf("fd failed to open\n");
+					}
+				}
+
+
+				while (temp.cmd_line[count]) {
+					temp.cmd_line[count] = NULL;
 					++count;
-					open(s, O_WRONLY, 0644);
 				}
 			}
-			else if (s[0] == '<') {		// input redirect
-				close(0);
-				++count;
-				open(s, O_RDONLY, 0644);
-			}
-			else {
-				++count;
-			}
+			printf("%s\n", temp.cmd_line[count]);
+			++count;
 		}
-		temp.cmd_line[count] = NULL;
 
 
-
-
-		//execute command
-		for (count = 0; count < 32; ++count) {
+		//printf("Debug: ready to execute\n");
+		for (count = 0; count < 32 && paths[count]; ++count) {
 			if (paths[count] != NULL) {
-   				printf("Searching %s\n", paths[count]);
+				printf("Searching %s\n", paths[count]);
 
 				strcpy(appendBuf, paths[count]);
 				strcat(appendBuf, "/");
@@ -337,6 +414,7 @@ int buildPipe(char **envp) {
 				execve(appendBuf, temp.cmd_line, envp);
 			}
 		}
+		isRedirect = isPiped = 0;
 	}
 
 }

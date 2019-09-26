@@ -40,7 +40,7 @@ char line[256] = { "\0" }, buf[256] = { "\0" }, *buf2;
 	int count, pid, status, fd;
 	NODE *p;
 	Cmd temp;
-	char temp2[128];
+
 
 
 	
@@ -66,7 +66,7 @@ char line[256] = { "\0" }, buf[256] = { "\0" }, *buf2;
 	}
 	printf("\n\nParced PATH Variable:\n");
 	count = 0;
-	while (paths[count]) {
+	while (paths[count]) {	//print PATH
 		printf("%s\n", paths[count]);
 		++count;
 	}
@@ -78,7 +78,7 @@ char line[256] = { "\0" }, buf[256] = { "\0" }, *buf2;
 
 
     while(1) {
-
+		//Get Input
         printf("mysh: $ "); 
 		fgets(line, 256, stdin); 
 		line[strlen(line) - 1] = 0; 
@@ -91,13 +91,13 @@ char line[256] = { "\0" }, buf[256] = { "\0" }, *buf2;
 		p = (NODE *)malloc(sizeof(NODE));
 		//printf("!! Debug Help !!\n");
 		while (buf2) {
-			if (!strcmp(buf2, "|")) {
+			if (!strcmp(buf2, "|")) {	//push cmd to stack for processing
                 //printf("Debug: push pipe to stack\n");
 				push_stack(p);
 				p = (NODE *)malloc(sizeof(NODE));
 				isPiped = 1;
 			}
-			else {
+			else {		//add str to cmd arg
 				printf("%s\n", buf2);
 				//strcat(p->data.cmd_line, " ");
 				//strcat(p->data.cmd_line, buf2);
@@ -114,7 +114,7 @@ char line[256] = { "\0" }, buf[256] = { "\0" }, *buf2;
         //printf("Debug: get command\n");
 		temp = peek_stack();
 
-        if (!strcmp(temp.cmd_line[0], "cd")) {			//hadnle cd
+        if (!strcmp(temp.cmd_line[0], "cd")) {			//handle cd
 			if (strcmp(temp.cmd_line[1], "")) {
 				chdir(temp.cmd_line[1]);
 			}
@@ -147,16 +147,13 @@ char line[256] = { "\0" }, buf[256] = { "\0" }, *buf2;
 					//	printf("%s\n", strcmp(temp.cmd_line[count], ">"));
 					//	printf("%s\n", strcmp(temp.cmd_line[count], ">>"));
 					//	printf("%s\n", strcmp(temp.cmd_line[count], "<"));
-						strcpy(temp2, "/");
 
 						//temp.cmd_line[count] = NULL;
                         if (!strcmp(temp.cmd_line[count], ">")) {
 							printf("Output Redirection\n");
                             //close(1);
                             //open(temp.cmd_line[count + 1], O_WRONLY, 0644);
-							strcat(temp2, temp.cmd_line[count + 1]);
-							printf("Debug: %s\n", temp2);
-							fd = open(temp2, O_WRONLY | O_CREAT);
+							fd = open(temp.cmd_line[count + 1], O_WRONLY | O_CREAT);
 							if (fd != -1) {
 								printf("fd opened\n");
 								if (dup2(1, fd) != -1) {
@@ -173,9 +170,7 @@ char line[256] = { "\0" }, buf[256] = { "\0" }, *buf2;
                         else if (!strcmp(temp.cmd_line[count], ">>")) {
 							printf("Outfut Append Redirection\n");
                             //close(1);
-							strcat(temp2, temp.cmd_line[count + 1]);
-							printf("Debug: %s\n", temp2);
-							fd = open(temp2, O_APPEND | O_CREAT);
+							fd = open(temp.cmd_line[count + 1], O_APPEND | O_CREAT);
 							if (fd != -1) {
 								printf("fd opened\n");
 								if (dup2(1, fd) != -1) {
@@ -194,9 +189,7 @@ char line[256] = { "\0" }, buf[256] = { "\0" }, *buf2;
 							printf("Input Redirection\n");
                             //close(0);
                             //open(temp.cmd_line[count + 1], O_RDONLY);
-							strcat(temp2, temp.cmd_line[count + 1]);
-							printf("Debug: %s\n", temp2);
-							fd = open(temp2, O_RDONLY);
+							fd = open(temp.cmd_line[count + 1], O_RDONLY);
 							if (fd != -1) {
 								printf("fd opened\n");
 								if (dup2(0, fd) != -1) {
