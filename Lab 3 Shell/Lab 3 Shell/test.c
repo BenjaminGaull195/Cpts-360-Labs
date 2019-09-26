@@ -40,6 +40,7 @@ char line[256] = { "\0" }, buf[256] = { "\0" }, *buf2;
 	int count, pid, status, fd;
 	NODE *p;
 	Cmd temp;
+	char temp2[128];
 
 
 	
@@ -146,13 +147,16 @@ char line[256] = { "\0" }, buf[256] = { "\0" }, *buf2;
 					//	printf("%s\n", strcmp(temp.cmd_line[count], ">"));
 					//	printf("%s\n", strcmp(temp.cmd_line[count], ">>"));
 					//	printf("%s\n", strcmp(temp.cmd_line[count], "<"));
+						strcpy(temp2, "/");
 
 						//temp.cmd_line[count] = NULL;
                         if (!strcmp(temp.cmd_line[count], ">")) {
 							printf("Output Redirection\n");
                             //close(1);
                             //open(temp.cmd_line[count + 1], O_WRONLY, 0644);
-							fd = open(temp.cmd_line[count + 1], O_WRONLY | O_CREAT);
+							strcat(temp2, temp.cmd_line[count + 1]);
+							printf("Debug: %s\n", temp2);
+							fd = open(temp2, O_WRONLY | O_CREAT);
 							if (fd != -1) {
 								printf("fd opened\n");
 								if (dup2(1, fd) != -1) {
@@ -169,7 +173,9 @@ char line[256] = { "\0" }, buf[256] = { "\0" }, *buf2;
                         else if (!strcmp(temp.cmd_line[count], ">>")) {
 							printf("Outfut Append Redirection\n");
                             //close(1);
-							fd = open(temp.cmd_line[count + 1], O_APPEND | O_CREAT);
+							strcat(temp2, temp.cmd_line[count + 1]);
+							printf("Debug: %s\n", temp2);
+							fd = open(temp2, O_APPEND | O_CREAT);
 							if (fd != -1) {
 								printf("fd opened\n");
 								if (dup2(1, fd) != -1) {
@@ -188,8 +194,11 @@ char line[256] = { "\0" }, buf[256] = { "\0" }, *buf2;
 							printf("Input Redirection\n");
                             //close(0);
                             //open(temp.cmd_line[count + 1], O_RDONLY);
-							fd = open(temp.cmd_line[count + 1], O_RDONLY);
+							strcat(temp2, temp.cmd_line[count + 1]);
+							printf("Debug: %s\n", temp2);
+							fd = open(temp2, O_RDONLY);
 							if (fd != -1) {
+								printf("fd opened\n");
 								if (dup2(0, fd) != -1) {
 									printf("fd Opened\n");
 								}
