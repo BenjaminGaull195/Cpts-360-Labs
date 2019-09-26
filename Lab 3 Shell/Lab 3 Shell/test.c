@@ -140,11 +140,11 @@ char line[256] = { "\0" }, buf[256] = { "\0" }, *buf2;
                 count = 0;
                 while (temp.cmd_line[count]) {
                 
-                    if (!strcmp(temp.cmd_line[count], ">") || !strcmp(temp.cmd_line[count], ">>") || !strcmp(temp.cmd_line[count], "<")) {
-						printf("Debug: IO Redirection Present\n");
-						printf("%s\n", strcmp(temp.cmd_line[count], ">"));
-						printf("%s\n", strcmp(temp.cmd_line[count], ">>"));
-						printf("%s\n", strcmp(temp.cmd_line[count], "<"));
+                   // if (!strcmp(temp.cmd_line[count], ">") || !strcmp(temp.cmd_line[count], ">>") || !strcmp(temp.cmd_line[count], "<")) {
+						printf("Debug: Possible IO Redirection Present\n");
+					//	printf("%s\n", strcmp(temp.cmd_line[count], ">"));
+					//	printf("%s\n", strcmp(temp.cmd_line[count], ">>"));
+					//	printf("%s\n", strcmp(temp.cmd_line[count], "<"));
 
 
 						//temp.cmd_line[count] = NULL;
@@ -187,7 +187,7 @@ char line[256] = { "\0" }, buf[256] = { "\0" }, *buf2;
                             temp.cmd_line[count] = NULL;
                             ++count;
                         }
-                    }
+                   // }
                     printf("%s\n", temp.cmd_line[count]);
                     ++count;
                 }
