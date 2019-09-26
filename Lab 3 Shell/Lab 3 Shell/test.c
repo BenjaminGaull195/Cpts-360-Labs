@@ -188,7 +188,7 @@ char line[256] = { "\0" }, buf[256] = { "\0" }, *buf2;
                             //open(temp.cmd_line[count + 1], O_RDONLY);
 							fd = open(temp.cmd_line[count + 1], O_RDONLY);
 							if (fd != -1) {
-								if (dup2(0, fd) != -1) {
+								if (dup2(fd, 0) != -1) {
 									printf("fd Opened\n");
 								}
 								else {
