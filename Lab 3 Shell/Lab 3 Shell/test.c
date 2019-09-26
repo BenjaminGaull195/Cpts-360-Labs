@@ -97,7 +97,7 @@ char line[256] = { "\0" }, buf[256] = { "\0" }, *buf2;
 				isPiped = 1;
 			}
 			else {
-				//printf("%s\n", buf2);
+				printf("%s\n", buf2);
 				//strcat(p->data.cmd_line, " ");
 				//strcat(p->data.cmd_line, buf2);
 				//strcat(p->data.cmd_line, " ");
@@ -142,7 +142,7 @@ char line[256] = { "\0" }, buf[256] = { "\0" }, *buf2;
                 
                    // if (!strcmp(temp.cmd_line[count], ">") || !strcmp(temp.cmd_line[count], ">>") || !strcmp(temp.cmd_line[count], "<")) {
 						printf("Debug: Possible IO Redirection Present\n");
-						printf("%s\n", temp.cmd_line[count]);
+						//printf("%s\n", temp.cmd_line[count]);
 					//	printf("%s\n", strcmp(temp.cmd_line[count], ">"));
 					//	printf("%s\n", strcmp(temp.cmd_line[count], ">>"));
 					//	printf("%s\n", strcmp(temp.cmd_line[count], "<"));
