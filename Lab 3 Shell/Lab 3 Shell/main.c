@@ -187,8 +187,8 @@ int main(int argc, char *argv[], char *env[]) {
 				//execute command
 				for (count = 0; count < 32; ++count) {
 					if (paths[count] != "\0") {
-						printf("Searching %s", paths[count]);
-						execve(paths[count], temp.cmd_line, env);
+						printf("Searching %s\n", paths[count]);
+						execve(strcat(strcat(paths[count], "/"), temp.cmd_line[0]), temp.cmd_line, env);
 					}
 				}
 			}
@@ -297,9 +297,10 @@ int buildPipe(char **envp) {
 
 		//execute command
 		for (count = 0; count < 32; ++count) {
-			if (paths[count] != "\0") {
-				printf("Searching %s", paths[count]);
-				execve(paths[count], temp.cmd_line, envp);
+			if (paths[count] != NULL) {
+				printf("Searching %s\n", paths[count]);
+			
+				execve(strcat(strcat(paths[count],"/"),temp.cmd_line[0]), temp.cmd_line, envp);
 			}
 		}
 	}
