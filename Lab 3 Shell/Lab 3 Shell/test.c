@@ -172,9 +172,9 @@ char line[256] = { "\0" }, buf[256] = { "\0" }, *buf2;
                         }
                         else {
 							printf("Input Redirection\n");
-                            close(0);
-                            open(temp.cmd_line[count + 1], O_RDONLY);
-							if (dup2(0, open(temp.cmd_line[count + 1], _O_RDONLY)) != -1) {
+                            //close(0);
+                            //open(temp.cmd_line[count + 1], O_RDONLY);
+							if (dup2(0, open(temp.cmd_line[count + 1], O_RDONLY)) != -1) {
 								printf("fd Opened\n");
 							}
 							else {
