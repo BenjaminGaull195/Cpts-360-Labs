@@ -145,18 +145,36 @@ char line[256] = { "\0" }, buf[256] = { "\0" }, *buf2;
 						//temp.cmd_line[count] = NULL;
                         if (!strcmp(temp.cmd_line[count], ">")) {
 							printf("Output Redirection\n");
-                            close(1);
-                            open(temp.cmd_line[count + 1], O_WRONLY, 0644);
+                            //close(1);
+                            //open(temp.cmd_line[count + 1], O_WRONLY, 0644);
+							if (dup2(1, open(temp.cmd_line[count + 1], O_WRONLY, 0644)) != -1) {
+								printf("fd Opened\n");
+							}
+							else {
+								printf("fd failed to open\n");
+							}
                         }
                         else if (!strcmp(temp.cmd_line[count], ">>")) {
 							printf("Outfut Append Redirection\n");
-                            close(1);
-                            open(temp.cmd_line[count + 1], O_APPEND, 0644);
+                            //close(1);
+							if (dup2(1, open(temp.cmd_line[count + 1], O_APPEND, 0644)) != -1) {
+								printf("fd Opened\n");
+							}
+							else {
+								printf("fd failed to open\n");
+							}
+
                         }
                         else {
 							printf("Input Redirection\n");
                             close(0);
                             open(temp.cmd_line[count + 1], O_RDONLY);
+							if (dup2(0, open(temp.cmd_line[count + 1], _O_RDONLY)) != -1) {
+								printf("fd Opened\n");
+							}
+							else {
+								printf("fd failed to open\n");
+							}
                         }
 
 
