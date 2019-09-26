@@ -3,11 +3,13 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <fcntl.h>
 
 
+//structs
 
 typedef struct cmd {
-	char cmd_line[256];
+	char *cmd_line[32];
 }Cmd;
 
 typedef struct node {
@@ -16,12 +18,23 @@ typedef struct node {
 } NODE;
 
 
-
 //global variables
 
 NODE * pipe_stack = NULL;
 char *envptr, *paths[32] = { NULL };
 
+
+//function prototypes
+int push_stack(NODE *p);
+
+int pop_stack();
+
+Cmd peek_stack();
+
+int buildPipe(char **envp);
+
+
+//main
 
 int main(int argc, char *argv[], char *env[]) {
 	char line[256] = { "\0" }, *arg[32] = { {"\0"} }, buf[256] = { "\0" }, *buf2;
@@ -33,8 +46,10 @@ int main(int argc, char *argv[], char *env[]) {
 	
 	//print and parse PATH environment variable
 	//strcpy(path, getenv("PATH"));
+	printf("!!! Init PATH Variable !!!\n\n");
+
 	envptr = getenv("PATH");
-	printf("%s", envptr);
+	printf("PATH=%s", envptr);
 
 	//parce PATH
 	count = 0;
@@ -49,34 +64,47 @@ int main(int argc, char *argv[], char *env[]) {
 			paths[count] = NULL;
 		}
 	}
+	printf("\n\nParced PATH Variable:\n");
+	count = 0;
+	while (paths[count]) {
+		printf("%s\n", paths[count]);
+		++count;
+	}
 
+	printf("\n!!! PATH Initialized !!!\n\n");
 
 	//loop through shell
 	while (1) {
 		//get input
+		
 		printf("mysh $ "); 
 		fgets(line, 256, stdin); 
 		line[strlen(line) - 1] = 0; 
-
+		Cmd temp;
 
 		//parse command string; build stack for I/O redirection/pipes
 		//sscanf(line, "%s %[^\n|]", arg[0], buf);
 		
 		buf2 = strtok(line, " ");
+		count = 0;
 		p = (NODE *)malloc(sizeof(NODE));
 		while (buf2) {
 			if (!strcmp(buf2, "|")) {
 				push_stack(p);
 				p = (NODE *)malloc(sizeof(NODE));
+				isPiped = 1;
 			}
 			else {
-				strcat(p->data.cmd_line, " ");
-				strcat(p->data.cmd_line, buf2);
-				strcat(p->data.cmd_line, " ");
+				//strcat(p->data.cmd_line, " ");
+				//strcat(p->data.cmd_line, buf2);
+				//strcat(p->data.cmd_line, " ");
+				p->data.cmd_line[count] = buf2;
+				++count;
 			}
 			
 			buf2 = strtok(NULL, " ");
 		}
+		push_stack(p);
 
 
 		//execute command; build pipe; redirect output
@@ -85,7 +113,7 @@ int main(int argc, char *argv[], char *env[]) {
 				chdir(arg[1]);
 			}
 			else {
-				chdir(HOME);
+				chdir(getenv("HOME"));
 			}
 		}
 		else if (!strcmp(arg[0], "exit")) {
@@ -95,10 +123,18 @@ int main(int argc, char *argv[], char *env[]) {
 			buildPipe(env);
 		}
 		else {
-
+			temp = peek_stack();
+			for (count = 0; count < 32; ++count) {
+				if (paths[count] != "\0") {
+					execve(paths[count], temp.cmd_line, env);
+				}
+			}
+			/*
 			if (!fork()) {
+
 				execve(arg, env);
 			}
+			*/
 		}
 		isPiped = 0;
 
