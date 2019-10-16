@@ -75,7 +75,7 @@ main(int argc, char *argv[]) {
   *****************************************************************/
   //temp functions to be executed
 	if (!strcmp(cmd, "mkdir")) {
-		r = mkdir(param1);
+		r = mkdir(param1, 0755);
 	}
 	else if (!strcmp(cmd, "rmdir")) {
 		r = rmdir(param1);
@@ -215,7 +215,7 @@ int ls_file(char *fname) {
 	printf("%s", ftime);
 	printf("%s", basename(fname));
 	if ((sp->st_mode & 0xF000) == 0xA000) {
-		linkname(fname, linkname, 128);
+		readlink(fname, linkname, 128);
 		printf(" - > %s", linkname);
 	}
 	printf("<p>");
