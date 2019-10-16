@@ -75,12 +75,13 @@ int main(int argc, char *argv[])
 
 			sscanf(line, "&d %d", in1, in2);
 			out = in1 + in2;
-			strcopy(line, "result: ");
+			sprintf(line, "%d + %d = %d\n", in1, in2, out);
+			/*strcopy(line, "result: ");
 			strcat(line, in1);
 			strcat(line, " + ");
 			strcat(line, in2);
 			strcat(line, " = ");
-			strcat(line, out);
+			strcat(line, out);*/
 
 
 			// send the echo line to client 
