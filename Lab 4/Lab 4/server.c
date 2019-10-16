@@ -3,6 +3,10 @@
 #include <string.h>
 #include <time.h>
 
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <dirent.h>
+
 #include <unistd.h>
 #include <netdb.h> 
 #include <netinet/in.h> 
@@ -18,25 +22,38 @@
 char line[MAX];
 int n;
 
-typedef void(*cmd)(char *);
+typedef void(*cmd)(int, char *);
 
-int _pwd(char *pathname);
-int _ls(char *pathname);
-int _cd(char *pathname);
-int _mkdir(char *pathname);
-int _rmdir(char *pathname);
-int _rm(char *pathname);
-int _get(char *pathname); //send
-int _put(char *pathname); //recieve
+int find_cmd(char *cmd);
 
-char *command_str[20] = ("pwd", "ls", "cd", "mkdir", "rmdir", "rm", "get", "put");
-cmd command[20] = { _pwd, _ls, _cd, _mkdir, _rmdir, _rm, _get, _push };
+int _pwd(int fd, char *pathname);
+int _ls(int fd, char *pathname);
+int _cd(int fd, char *pathname);
+int _mkdir(int fd, char *pathname);
+int _rmdir(int fd, char *pathname);
+int _rm(int fd, char *pathname);
+int _get(int fd, char *pathname); //send
+int _put(int fd, char *pathname); //recieve
+
+char *command_str[20] = { "pwd", "ls", "cd", "mkdir", "rmdir", "rm", "get", "put", 0};
+cmd command[20] = { _pwd, _ls, _cd, _mkdir, _rmdir, _rm, _get, _put };
+
+
+
+struct stat mystat, *sp;
+char *t1 = "xwrxwrxwr-------";
+char *t2 = "----------------";
+
+
 
 int main(int argc, char *argv[])
 {
-	int sfd, cfd, len;
+	int sfd, cfd, len, i;
 	struct sockaddr_in saddr, caddr;
 	int in1, in2, out;
+	char *_command, *temp;
+
+
 
 
 	printf("1. create a TCP socket\n");
@@ -76,41 +93,173 @@ int main(int argc, char *argv[])
 
 		//processing loop
 		while (1) {
+			//read command input
+			printf("server: ready for next request\n");
+			n = read(cfd, line, MAX);
+			if (n == 0) {
+				printf("server: client died, server loops\n");
+				close(cfd);
+				break;
+			}
+			//parse command
+			sscanf(line, "%s %s", _command, temp);
+
+			//execute command
+			i = find_cmd(_command);
+			if (i >= 0) {
+				command[i](cfd, temp);
+			}
+			else {
+				printf("server: can't find command: %s\n", _command);
+				write(cfd, "Error: can't find command", MAX);
+			}
 
 		}
 	}
 }
 
+int find_cmd(char *cmd) {
+	int i = 0;
+	for (i = 0; i < 20, command_str[i] != 0; ++i) {
+		if (!strcmp(command_str[i], cmd)) {
+			return i;
+		}
+	}
+	return -1;
+}
 
-int _pwd(char *pathname) {
+
+int _pwd(int fd, char *pathname) {
+	char line[MAX];
+	getcwd(line, MAX);
+	n = write(fd, line, MAX);
+	printf("server: wrote n=%d bytes; ECHO=[%s]\n", n, line);
+	printf("server: wrote n=%d bytes; ECHO=[%s]\n", n, "OK");
 
 }
 
-int _ls(char *pathname) {
+
+int ls_file(int fd, char *fname) {
+	struct stat fstat, *sp;
+	int r, i;
+	char ftime[64], linkname[128], line[MAX], temp[128];
+	sp = &fstat;
+	if ((r = lstat(fname, &fstat)) < 0) {
+		printf("server: can't stat %s<p>", fname);
+		//exit(1);
+		return -1;
+	}
+	if ((sp->st_mode & 0xF000) == 0x8000) {
+		strcat(line, '-');
+		//printf("%c", '-');
+	}
+	if ((sp->st_mode & 0xF000) == 0x4000) {
+		strcat(line, 'd');
+		//printf("%c", 'd');
+	}
+	if ((sp->st_mode & 0xF000) == 0xA000) {
+		//printf("%c", 'l');
+		strcat(line, 'l');
+	}
+	for (i = 8; i >= 0; --i) {
+		if (sp->st_mode & (1 << i)) {
+			//printf("%c", t1[i]);
+			strcat(line, t1[i]);
+		}
+		else {
+			strcat(line, t2[i]);
+			//printf("%c", t2[i]);
+		}
+	}
+
+	sprintf(line, "%4d %4d %4d %8d", sp->st_nlink, sp->st_gid, sp->st_uid, sp->st_size);
+	//printf("%4d", sp->st_nlink);
+	//printf("%4d", sp->st_gid);
+	//printf("%4d", sp->st_uid);
+	//printf("%8d", sp->st_size);
+	strcpy(ftime, ctime(&sp->st_ctime));
+	ftime[strlen(ftime) - 1] = 0;
+	sprintf(line, "%s %s", ftime, basename(fname));
+	//printf("%s", ftime);
+	//printf("%s", basename(fname));
+	if ((sp->st_mode & 0xF000) == 0xA000) {
+		readlink(fname, linkname, 128);
+		//printf(" - > %s", linkname);
+		sprintf(line, " -> %s", linkname);
+	}
+	write(fd, line, MAX);
+}
+
+int ls_dir(int fd, char *dname) {
+	struct dirent *ep;
+	DIR *dp = opendir(dname);
+
+	if (dp == 0) {
+		printf("opendir %s failed\n", dname);
+		return -1;
+	}
+	while (ep = readdir(dp)) {
+		if (strcmp(ep->d_name, ".") && strcmp(ep->d_name, "..")) {
+			if (ls_file(fd, ep->d_name) < 0) {
+				return -1;
+			}
+		}
+	}
 
 }
 
-int _cd(char *pathname) {
+
+int _ls(int fd, char *pathname) {
+	struct stat mystat, *sp = &mystat;
+	int r;
+	if (r = lstat(pathname, sp) < 0) {
+		printf("server:%s does not exist<p>", pathname);
+		write(fd, "server: does not exist\n", MAX);
+		return -1;
+	}
+	if (S_ISDIR(sp->st_mode)) {
+		if (ls_dir(fd, pathname) < 0) {
+			write(fd, "server: ls failed\n", MAX);
+			printf("server: ls failed\n");
+			return -1;
+		}
+	}
+	else {
+		if (ls_file(fd, pathname) < 0) {
+			write(fd, "server: ls failed\n", MAX);
+			printf("server: ls failed\n");
+			return -1;
+		}
+	}
+}
+
+int _cd(int fd, char *pathname) {
 
 }
 
-int _mkdir(char *pathname) {
-
+int _mkdir(int fd, char *pathname) {
+	int r = mkdir(pathname, 0755);
+	n = write(fd, "OK", MAX);
+	printf("server: wrote n=%d bytes; ECHO=[%s]\n", n, "OK");
 }
 
-int _rmdir(char *pathname) {
-
+int _rmdir(int fd, char *pathname) {
+	int r = rmdir(pathname);
+	n = write(fd, "OK", MAX);
+	printf("server: wrote n=%d bytes; ECHO=[%s]\n", n, "OK");
 }
 
-int _rm(char *pathname) {
-
+int _rm(int fd, char *pathname) {
+	int r = unlink(pathname);
+	n = write(fd, "OK", MAX);
+	printf("server: wrote n=%d bytes; ECHO=[%s]\n", n, "OK");
 }
 
-int _get(char *pathname) { //send
-
+int _get(int fd, char *pathname) { //send
+	_send(fd, pathname);
 }
 
-int _put(char *pathname) { //recieve
-
+int _put(int fd, char *pathname) { //recieve
+	_recieve(fd, pathname);
 }
 

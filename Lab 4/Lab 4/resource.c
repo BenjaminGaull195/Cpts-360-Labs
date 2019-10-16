@@ -16,13 +16,13 @@
 #define PORT 1234
 #define BLKSIZE 4096
 
-int send(int fd, char *filename);
-int recieve(int fd, char *filename);
+int _send(int fd, char *filename);
+int _recieve(int fd, char *filename);
 
 
 
 //send
-int send(int fd, char *filename) {
+int _send(int fd, char *filename) {
 
 }
 
@@ -35,7 +35,7 @@ int send(int fd, char *filename) {
 
 
 //recieve
-int recieve(int fd, char *filename) {
+int _recieve(int fd, char *filename) {
 
 }
 
