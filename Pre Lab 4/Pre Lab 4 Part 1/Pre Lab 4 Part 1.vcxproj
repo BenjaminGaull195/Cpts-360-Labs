@@ -76,6 +76,7 @@
   <PropertyGroup Label="UserMacros" />
   <ItemGroup>
     <ClCompile Include="client.c" />
+    <ClCompile Include="mycgi.c" />
     <ClCompile Include="server.c" />
     <ClCompile Include="util.c" />
   </ItemGroup>
