@@ -134,14 +134,14 @@ int find_cmd(char *cmd) {
 
 
 int _cat(int fd, char *pathname) {
-	int fd, i, m, n;
+	int gd, i, m, n;
 	char buf[BLKSIZE], dummy;
-	fd = open(pathname, O_RDONLY);
-	if (fd < 0) {
+	gd = open(pathname, O_RDONLY);
+	if (gd < 0) {
 		printf("failed to open %s\n", pathname);
 		return -1;
 	}
-	while (n = read(fd, buf, BLKSIZE)) {
+	while (n = read(gd, buf, BLKSIZE)) {
 		m = write(1, buf, n);
 		//printf("<p>");
 	}
