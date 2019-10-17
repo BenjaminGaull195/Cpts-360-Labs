@@ -40,7 +40,7 @@ int _put(int fd, char *pathname);
 
 typedef void(*cmd)(int, char *);
 char *command_str[20] = { "lcat, lpwd, lls, lcd, lmkdir, lrmdir, lrm", "quit", "get", "put", 0 };
-cmd command[20] = { _cat, _pwd, _ls, _cd, _mkdir, _rmdir, _rm, _quit, _get, _put};
+cmd command[20] = { &_cat, &_pwd, &_ls, &_cd, &_mkdir, &_rmdir, &_rm, &_quit, &_get, &_put};
 
 struct stat mystat, *sp;
 char *t1 = "xwrxwrxwr-------";
