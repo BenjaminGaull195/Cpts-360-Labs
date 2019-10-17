@@ -106,9 +106,12 @@ int _recieve(int fd, char *filename) {
 		while (n = read(fd, buf, BLKSIZE)) {
 			write(gd, buf, n);
 			total += n;
-			printf("n = %d, total = %d", n, total);
+			printf("n = %d, total = %d\n", n, total);
 			bzero(buf, BLKSIZE);
 		}
+	}
+	else {
+		printf("Error: can't get file\n");
 	}
 	return total;
 }

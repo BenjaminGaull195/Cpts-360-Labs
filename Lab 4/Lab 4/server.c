@@ -134,6 +134,7 @@ int _pwd(int fd, char *pathname) {
 	char line[MAX];
 	getcwd(line, MAX);
 	n = write(fd, line, MAX);
+	write(fd, "OK pwd\n", MAX);
 	printf("server: wrote n=%d bytes; ECHO=[%s]\n", n, line);
 	printf("server: wrote n=%d bytes; ECHO=[%s]\n", n, "OK");
 
@@ -231,34 +232,35 @@ int _ls(int fd, char *pathname) {
 			printf("server: ls failed\n");
 			return -1;
 		}
+		write(fd, "END of ls\n", MAX);
 	}
 }
 
 int _cd(int fd, char *pathname) {
 	int n;
 	int r = chdir(pathname);
-	n = write(fd, "OK", MAX);
+	n = write(fd, "OK cd\n", MAX);
 	printf("server: wrote n=%d bytes; ECHO=[%s]\n", n, "OK");
 }
 
 int _mkdir(int fd, char *pathname) {
 	int n;
 	int r = mkdir(pathname, 0755);
-	n = write(fd, "OK", MAX);
+	n = write(fd, "OK mkdir\n", MAX);
 	printf("server: wrote n=%d bytes; ECHO=[%s]\n", n, "OK");
 }
 
 int _rmdir(int fd, char *pathname) {
 	int n;
 	int r = rmdir(pathname);
-	n = write(fd, "OK", MAX);
+	n = write(fd, "OK rmdir\n", MAX);
 	printf("server: wrote n=%d bytes; ECHO=[%s]\n", n, "OK");
 }
 
 int _rm(int fd, char *pathname) {
 	int n;
 	int r = unlink(pathname);
-	n = write(fd, "OK", MAX);
+	n = write(fd, "OK rm\n", MAX);
 	printf("server: wrote n=%d bytes; ECHO=[%s]\n", n, "OK");
 }
 

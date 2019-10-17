@@ -22,6 +22,8 @@
 char line[MAX], ans[MAX];
 int n;
 
+int show_menu();
+
 int find_cmd(char *cmd);
 
 int _cat(int fd, char *pathname);
@@ -73,6 +75,7 @@ int main(int argc, char *argv[])
 	//processing loop
 	while (1) {
 		//print available commands
+		show_menu();
 
 		//get command
 		printf("input a line : ");
@@ -84,10 +87,11 @@ int main(int argc, char *argv[])
 			exit(0);
 
 		_cmd[0] = temp[0] = 0;
+		sscanf(line, "%s %s", _cmd, temp);
 
-		if (line[0] != 'l') {	//server command
+
+		if (line[0] != 'l' && strcmp(_cmd, "ls")) {	//server command
 			// Send ENTIRE line to server
-			sscanf(line, "%s %s", _cmd, temp);
 			n = write(cfd, line, MAX);
 			printf("client: wrote n=%d bytes; line=(%s)\n", n, line);
 			if (!strcmp(_cmd, "get")) {
@@ -98,8 +102,10 @@ int main(int argc, char *argv[])
 			}
 			else {
 
-				while (read(cfd, line, MAX)) {
-					
+				while (strcmp(_cmd, "END") && strcmp(_cmd, "OK") ) {
+					read(cfd, line, MAX);
+					sscanf(line, "%s %s", _cmd, temp);
+					printf("%s", line);
 				}
 			}
 		}
@@ -107,6 +113,7 @@ int main(int argc, char *argv[])
 			sscanf(line, "%s %s", _cmd, temp);
 			i = find_cmd(_cmd);
 			command[i](cfd, temp);
+
 			
 		}
 		
