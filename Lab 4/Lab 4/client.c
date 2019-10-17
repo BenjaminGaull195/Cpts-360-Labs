@@ -132,6 +132,13 @@ int main(int argc, char *argv[])
 
 }
 
+int show_menu() {
+	printf("******************** Menu *********************\n");
+	printf("* get put ls   cd   pwd   mkdir   rmdir   rm  *\n");
+	printf("* lcat    lls  lcd  lpwd  lmkdir  lrmdir  lrm *\n");
+	printf("***********************************************\n");
+}
+
 
 int find_cmd(char *cmd) {
 	int i = 0;
