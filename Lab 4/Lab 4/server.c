@@ -101,6 +101,7 @@ int main(int argc, char *argv[])
 				close(cfd);
 				break;
 			}
+			_command[0] = temp[0] = 0;
 			//parse command
 			sscanf(line, "%s %s", _command, temp);
 
@@ -234,22 +235,28 @@ int _ls(int fd, char *pathname) {
 }
 
 int _cd(int fd, char *pathname) {
-
+	int n;
+	int r = chdir(pathname);
+	n = write(fd, "OK", MAX);
+	printf("server: wrote n=%d bytes; ECHO=[%s]\n", n, "OK");
 }
 
 int _mkdir(int fd, char *pathname) {
+	int n;
 	int r = mkdir(pathname, 0755);
 	n = write(fd, "OK", MAX);
 	printf("server: wrote n=%d bytes; ECHO=[%s]\n", n, "OK");
 }
 
 int _rmdir(int fd, char *pathname) {
+	int n;
 	int r = rmdir(pathname);
 	n = write(fd, "OK", MAX);
 	printf("server: wrote n=%d bytes; ECHO=[%s]\n", n, "OK");
 }
 
 int _rm(int fd, char *pathname) {
+	int n;
 	int r = unlink(pathname);
 	n = write(fd, "OK", MAX);
 	printf("server: wrote n=%d bytes; ECHO=[%s]\n", n, "OK");

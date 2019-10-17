@@ -3,6 +3,10 @@
 #include <string.h>
 #include <time.h>
 
+#include <dirent.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 #include <unistd.h>
 #include <netdb.h> 
 #include <netinet/in.h> 
@@ -18,26 +22,33 @@
 char line[MAX], ans[MAX];
 int n;
 
-int _cat(char *pathname);
-int _pwd(char *pathname);
-int _ls(char *pathname);
-int _cd(char *pathname);
-int _mkdir(char *pathname);
-int _rmdir(char *pathname);
-int _rm(char *pathname);
-int _quit();
-int _get(char *pathname);
-int _put(char *pathname);
+int find_cmd(char *cmd);
+
+int _cat(int fd, char *pathname);
+int _pwd(int fd, char *pathname);
+int _ls(int fd, char *pathname);
+int _cd(int fd, char *pathname);
+int _mkdir(int fd, char *pathname);
+int _rmdir(int fd, char *pathname);
+int _rm(int fd, char *pathname);
+int _quit(int fd, char *pathname);
+int _get(int fd, char *pathname);
+int _put(int fd, char *pathname);
 
 
-typedef void(*cmd)();
-char *command_str[20] = { "lcat, lpwd, lls, lcd, lmkdir, lrmdir, lrm", "quit", "get", "put" };
-cmd command[20] = { cat, pwd, ls, cd, mkdir, rmdir, rm, quit, get, put};
+typedef void(*cmd)(int, char *);
+char *command_str[20] = { "lcat, lpwd, lls, lcd, lmkdir, lrmdir, lrm", "quit", "get", "put", 0 };
+cmd command[20] = { _cat, _pwd, _ls, _cd, _mkdir, _rmdir, _rm, _quit, _get, _put};
+
+struct stat mystat, *sp;
+char *t1 = "xwrxwrxwr-------";
+char *t2 = "----------------";
 
 
 int main(int argc, char *argv[])
 {
-	int cfd;
+	int cfd, i, m;
+	char *_cmd, *temp, blk[BLKSIZE];
 	struct sockaddr_in saddr;
 
 	printf("1. create a TCP socket\n");
@@ -72,10 +83,28 @@ int main(int argc, char *argv[])
 		if (line[0] == 0)                  // exit if NULL line
 			exit(0);
 
-		// Send ENTIRE line to server
-		n = write(cfd, line, MAX);
-		printf("client: wrote n=%d bytes; line=(%s)\n", n, line);
-		
+		_cmd[0] = temp[0] = 0;
+
+		if (line[0] != 'l') {	//server command
+			// Send ENTIRE line to server
+			sscanf(line, "%s %s", _cmd, temp);
+			n = write(cfd, line, MAX);
+			printf("client: wrote n=%d bytes; line=(%s)\n", n, line);
+			if (!strcmp(_cmd, "get")) {
+				_get(cfd, temp);
+			}
+			else if (!strcmp(_cmd, "put")) {
+				_put(cfd, temp);
+			}
+			else {
+				m = read(cfd, line, MAX);
+			}
+		}
+		else {	//local commands, get, put 
+			sscanf(line, "%s %s", _cmd, temp);
+			i = find_cmd(_cmd);
+			command[i](cfd, temp);
+		}
 		
 		/*
 		// Read a line from sock and show it
@@ -83,59 +112,150 @@ int main(int argc, char *argv[])
 		printf("client: read  n=%d bytes; echo=(%s)\n", n, ans);
 		*/
 		//recieve reply
-		while (strcmp(ans, "OK")) {
-			//n = read(cfd, ans, MAX);
-			//printf("client: read  n=%d bytes; echo=(%s)\n", n, ans);
-		}
+
+		
 
 	}
 
 }
 
 
-
-
-
-int _cat(char *pathname) {
-
+int find_cmd(char *cmd) {
+	int i = 0;
+	while (command_str[i]) {
+		if (strcmp(cmd, command[i]) == 0) {
+			return i;
+		}
+		++i;
+	}
+	return -1;
 }
 
-int _pwd(char *pathname) {
+
+
+int _cat(int fd, char *pathname) {
+	int fd, i, m, n;
+	char buf[BLKSIZE], dummy;
+	fd = open(pathname, O_RDONLY);
+	if (fd < 0) {
+		printf("failed to open %s\n", pathname);
+		return -1;
+	}
+	while (n = read(fd, buf, BLKSIZE)) {
+		m = write(1, buf, n);
+		//printf("<p>");
+	}
+}
+
+int _pwd(int fd, char *pathname) {
 	line[256];
 	getcwd(line, 256);
-	printf("%s", line);
+	printf("%s\n", line);
 }
 
-int _ls(char *pathname) {
+int ls_file(char *fname) {
+	struct stat fstat, *sp;
+	int r, i;
+	char ftime[64], linkname[128];
+	sp = &fstat;
+	if ((r = lstat(fname, &fstat)) < 0) {
+		printf("can't stat %s\n", fname);
+		//exit(1);
+		return -1;
+	}
+	if ((sp->st_mode & 0xF000) == 0x8000) {
+		printf("%c", '-');
+	}
+	if ((sp->st_mode & 0xF000) == 0x4000) {
+		printf("%c", 'd');
+	}
+	if ((sp->st_mode & 0xF000) == 0xA000) {
+		printf("%c", 'l');
+	}
+	for (i = 8; i >= 0; --i) {
+		if (sp->st_mode & (1 << i)) {
+			printf("%c", t1[i]);
+		}
+		else {
+			printf("%c", t2[i]);
+		}
+	}
+	printf("%4d", sp->st_nlink);
+	printf("%4d", sp->st_gid);
+	printf("%4d", sp->st_uid);
+	printf("%8d", sp->st_size);
+	strcpy(ftime, ctime(&sp->st_ctime));
+	ftime[strlen(ftime) - 1] = 0;
+	printf("%s", ftime);
+	printf("%s", basename(fname));
+	if ((sp->st_mode & 0xF000) == 0xA000) {
+		readlink(fname, linkname, 128);
+		printf(" - > %s", linkname);
+	}
+	printf("\n");
+}
+
+int ls_dir(char *dname) {
+	struct dirent *ep;
+	DIR *dp = opendir(dname);
+
+	if (dp == 0) {
+		printf("opendir %s failed\n", dname);
+		return -1;
+	}
+	while (ep = readdir(dp)) {
+		if (strcmp(ep->d_name, ".") && strcmp(ep->d_name, "..")) {
+			ls_file(ep->d_name);
+		}
+	}
 
 }
 
-int _cd(char *pathname) {
-
+int _ls(int fd, char *pathname) {
+	struct stat mystat, *sp = &mystat;
+	int r;
+	if (r = lstat(pathname, sp) < 0) {
+		printf("%s does not exist\n", pathname);
+		return -1;
+	}
+	if (S_ISDIR(sp->st_mode)) {
+		ls_dir(pathname);
+	}
+	else {
+		ls_file(pathname);
+	}
 }
 
-int _mkdir(char *pathname) {
+int _cd(int fd, char *pathname) {
+	int r = chdir(pathname);
+	return 0;
+}
+
+int _mkdir(int fd, char *pathname) {
 	return mkdir(pathname, 0755);
+	return 0;
 }
 
-int _rmdir(char *pathname) {
+int _rmdir(int fd, char *pathname) {
 	return rmdir(pathname);
+	return 0;
 }
 
-int _rm(char *pathname) {
+int _rm(int fd, char *pathname) {
 	return unlink(pathname);
+	return 0;
 }
 
-int _quit() {
+int _quit(int fd, char *pathname) {
 	exit(0);
 }
 
-int _get(char *pathname) {
-
+int _get(int fd, char *pathname) {
+	_recieve(fd, pathname);
 }
 
-int _put(char *pathname) {
-
+int _put(int fd, char *pathname) {
+	_send(fd, pathname);
 }
 
 

@@ -4,6 +4,10 @@
 #include <string.h>
 #include <time.h>
 
+#include <dirent.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 #include <unistd.h>
 #include <netdb.h> 
 #include <netinet/in.h> 
@@ -23,7 +27,50 @@ int _recieve(int fd, char *filename);
 
 //send
 int _send(int fd, char *filename) {
+	int gd, size, n, total, r;
+	struct stat mystat, *sp;
+	char buf[BLKSIZE], ans[MAX];
+	printf("sending %s\n", filename);
 
+	printf("1. stat %s ", filename);
+	sp = &mystat;
+	r = stat(filename, sp);
+	if (r < 0) {
+		print("can't stat %s\n", filename);
+		sprintf(ans, "BAD can't stat %s\n", filename);
+		write(fd, ans, MAX);
+		return -1;
+	}
+
+	if (!IS_REG(sp->st_mode)) {
+		print("%s is not REG file\n", filename);
+		sprintf(ans, "BAD %s is not REG file\n", filename);
+		write(fd, ans, MAX);
+		return -1;
+	}
+
+	gd = open(filename, O_RDONLY);
+	if (gd < 0) {
+		print("can't open %s for READ\n", filename);
+		sprintf(ans, "BAD can't open %s for READ\n", filename);
+		write(fd, ans, MAX);
+		return -1;
+	}
+	printf("2. send OK %d\n", sp->st_size);
+	sprintf(ans, "OK %d", sp->st_size);
+	write(fd, ans, MAX);
+
+	total = 0;
+
+	printf("3. open %s for READ\n", filename);
+	while (n = read(gd, buf, BLKSIZE)) {
+		write(fd, buf, n);
+		total += n;
+		printf("n = %d, total = %d\n", n, total);
+		bzero(buf, BLKSIZE);
+	}
+	printf("sent %d bytes\n", total);
+	return total;
 }
 
 
@@ -36,7 +83,34 @@ int _send(int fd, char *filename) {
 
 //recieve
 int _recieve(int fd, char *filename) {
+	int gd, size, n, total, r;
+	char buf[BLKSIZE], ans[MAX], *responce, *num;
+	printf("recieving %s", filename);
 
+	printf("1. open % for WRITE\n", filename);
+	gd = open(filename, O_WRONLY | O_CREAT);
+	if (gd < 0) {
+		printf("failed to open %s for WRITE\n", filename);
+		return -1;
+	}
+	
+	printf("2. Waiting for responce\n");
+	read(fd, ans, MAX);
+	sscanf(ans, "%s %s", responce, num);
+
+
+	if (strcmp(responce, "OK")) {
+		r = atoi(num);
+
+		printf("3. WRITE %d bytes to %s\n", r, filename);
+		while (n = read(fd, buf, BLKSIZE)) {
+			write(gd, buf, n);
+			total += n;
+			printf("n = %d, total = %d", n, total);
+			bzero(buf, BLKSIZE);
+		}
+	}
+	return total;
 }
 
 
