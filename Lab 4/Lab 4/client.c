@@ -50,7 +50,7 @@ char *t2 = "----------------";
 int main(int argc, char *argv[])
 {
 	int cfd, i, m;
-	char *_cmd, *temp, blk[BLKSIZE];
+	char _cmd[MAX], temp[MAX], blk[BLKSIZE];
 	struct sockaddr_in saddr;
 
 	printf("1. create a TCP socket\n");
@@ -75,6 +75,8 @@ int main(int argc, char *argv[])
 	//processing loop
 	while (1) {
 		//print available commands
+		bzero(_cmd, MAX);
+		bzero(temp, MAX);
 		show_menu();
 
 		//get command
