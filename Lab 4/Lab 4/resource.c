@@ -42,7 +42,7 @@ int _send(int fd, char *filename) {
 		return -1;
 	}
 
-	if (!IS_REG(sp->st_mode)) {
+	if (!S_ISREG(sp->st_mode)) {
 		printf("%s is not REG file\n", filename);
 		sprintf(ans, "BAD %s is not REG file\n", filename);
 		write(fd, ans, MAX);
