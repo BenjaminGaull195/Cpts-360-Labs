@@ -97,13 +97,17 @@ int main(int argc, char *argv[])
 				_put(cfd, temp);
 			}
 			else {
-				m = read(cfd, line, MAX);
+
+				while (read(cfd, line, MAX)) {
+					
+				}
 			}
 		}
 		else {	//local commands, get, put 
 			sscanf(line, "%s %s", _cmd, temp);
 			i = find_cmd(_cmd);
 			command[i](cfd, temp);
+			
 		}
 		
 		/*
