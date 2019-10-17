@@ -36,14 +36,14 @@ int _send(int fd, char *filename) {
 	sp = &mystat;
 	r = stat(filename, sp);
 	if (r < 0) {
-		print("can't stat %s\n", filename);
+		printf("can't stat %s\n", filename);
 		sprintf(ans, "BAD can't stat %s\n", filename);
 		write(fd, ans, MAX);
 		return -1;
 	}
 
 	if (!IS_REG(sp->st_mode)) {
-		print("%s is not REG file\n", filename);
+		printf("%s is not REG file\n", filename);
 		sprintf(ans, "BAD %s is not REG file\n", filename);
 		write(fd, ans, MAX);
 		return -1;
@@ -51,7 +51,7 @@ int _send(int fd, char *filename) {
 
 	gd = open(filename, O_RDONLY);
 	if (gd < 0) {
-		print("can't open %s for READ\n", filename);
+		printf("can't open %s for READ\n", filename);
 		sprintf(ans, "BAD can't open %s for READ\n", filename);
 		write(fd, ans, MAX);
 		return -1;
