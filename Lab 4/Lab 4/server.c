@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
 
 
 
-
+	// wait for client
 	printf("1. create a TCP socket\n");
 	sfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (sfd < 0) {
@@ -83,6 +83,7 @@ int main(int argc, char *argv[])
 
 	len = sizeof(caddr);
 	while (1) {
+		//connect to client
 		printf("server accepting connection\n");
 		cfd = accept(sfd, (struct sockaddr *)&caddr, &len);
 		if (cfd < 0) {
@@ -119,6 +120,7 @@ int main(int argc, char *argv[])
 	}
 }
 
+//return index for command
 int find_cmd(char *cmd) {
 	int i = 0;
 	for (i = 0; i < 20, command_str[i] != 0; ++i) {
@@ -129,7 +131,7 @@ int find_cmd(char *cmd) {
 	return -1;
 }
 
-
+//send pwd to client (server)
 int _pwd(int fd, char *pathname) {
 	char line[MAX];
 	getcwd(line, MAX);
@@ -140,7 +142,7 @@ int _pwd(int fd, char *pathname) {
 
 }
 
-
+//ls helper function (server)
 int ls_file(int fd, char *fname) {
 	struct stat fstat, *sp;
 	int r, i;
@@ -150,7 +152,7 @@ int ls_file(int fd, char *fname) {
 		printf("server: can't stat %s<p>", fname);
 		//exit(1);
 		return -1;
-	}
+	}// get file mode
 	if ((sp->st_mode & 0xF000) == 0x8000) {
 		strcat(line, '-');
 		//printf("%c", '-');
@@ -163,7 +165,7 @@ int ls_file(int fd, char *fname) {
 		//printf("%c", 'l');
 		strcat(line, 'l');
 	}
-	for (i = 8; i >= 0; --i) {
+	for (i = 8; i >= 0; --i) {// get file permissions
 		if (sp->st_mode & (1 << i)) {
 			//printf("%c", t1[i]);
 			strcat(line, t1[i]);
@@ -174,24 +176,27 @@ int ls_file(int fd, char *fname) {
 		}
 	}
 
-	sprintf(line, "%4d %4d %4d %8d", sp->st_nlink, sp->st_gid, sp->st_uid, sp->st_size);
+	//format file stat
+	sprintf(line, " %s %4d %4d %4d %8d", line,  sp->st_nlink, sp->st_gid, sp->st_uid, sp->st_size);
 	//printf("%4d", sp->st_nlink);
 	//printf("%4d", sp->st_gid);
 	//printf("%4d", sp->st_uid);
 	//printf("%8d", sp->st_size);
-	strcpy(ftime, ctime(&sp->st_ctime));
+	strcpy(ftime, ctime(&sp->st_ctime));	//format file time
 	ftime[strlen(ftime) - 1] = 0;
 	sprintf(line, "%s %s", ftime, basename(fname));
 	//printf("%s", ftime);
-	//printf("%s", basename(fname));
+	//printf("%s", basename(fname)); get file symbolic link
 	if ((sp->st_mode & 0xF000) == 0xA000) {
 		readlink(fname, linkname, 128);
 		//printf(" - > %s", linkname);
 		sprintf(line, " -> %s", linkname);
 	}
+	//send file info
 	write(fd, line, MAX);
 }
 
+//ls helper function 
 int ls_dir(int fd, char *dname) {
 	struct dirent *ep;
 	DIR *dp = opendir(dname);
@@ -202,7 +207,7 @@ int ls_dir(int fd, char *dname) {
 	}
 	while (ep = readdir(dp)) {
 		if (strcmp(ep->d_name, ".") && strcmp(ep->d_name, "..")) {
-			if (ls_file(fd, ep->d_name) < 0) {
+			if (ls_file(fd, ep->d_name) < 0) {//send dir info
 				return -1;
 			}
 		}
@@ -210,7 +215,7 @@ int ls_dir(int fd, char *dname) {
 
 }
 
-
+//send directory content info (server)
 int _ls(int fd, char *pathname) {
 	struct stat mystat, *sp = &mystat;
 	int r;
@@ -219,14 +224,14 @@ int _ls(int fd, char *pathname) {
 		write(fd, "server: does not exist\n", MAX);
 		return -1;
 	}
-	if (S_ISDIR(sp->st_mode)) {
+	if (S_ISDIR(sp->st_mode)) {//if dir
 		if (ls_dir(fd, pathname) < 0) {
 			write(fd, "server: ls failed\n", MAX);
 			printf("server: ls failed\n");
 			return -1;
 		}
 	}
-	else {
+	else { //if file
 		if (ls_file(fd, pathname) < 0) {
 			write(fd, "server: ls failed\n", MAX);
 			printf("server: ls failed\n");
@@ -236,6 +241,7 @@ int _ls(int fd, char *pathname) {
 	}
 }
 
+//change cwd (server)
 int _cd(int fd, char *pathname) {
 	int n;
 	int r = chdir(pathname);
@@ -243,6 +249,7 @@ int _cd(int fd, char *pathname) {
 	printf("server: wrote n=%d bytes; ECHO=[%s]\n", n, "OK");
 }
 
+//make new dir (server)
 int _mkdir(int fd, char *pathname) {
 	int n;
 	int r = mkdir(pathname, 0755);
@@ -250,6 +257,7 @@ int _mkdir(int fd, char *pathname) {
 	printf("server: wrote n=%d bytes; ECHO=[%s]\n", n, "OK");
 }
 
+//remove existing dir *server)
 int _rmdir(int fd, char *pathname) {
 	int n;
 	int r = rmdir(pathname);
@@ -257,6 +265,7 @@ int _rmdir(int fd, char *pathname) {
 	printf("server: wrote n=%d bytes; ECHO=[%s]\n", n, "OK");
 }
 
+//remove existing file (server)
 int _rm(int fd, char *pathname) {
 	int n;
 	int r = unlink(pathname);
@@ -264,10 +273,12 @@ int _rm(int fd, char *pathname) {
 	printf("server: wrote n=%d bytes; ECHO=[%s]\n", n, "OK");
 }
 
+//send file to client
 int _get(int fd, char *pathname) { //send
 	_send(fd, pathname);
 }
 
+//get file from client
 int _put(int fd, char *pathname) { //recieve
 	_recieve(fd, pathname);
 }

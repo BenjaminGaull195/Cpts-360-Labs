@@ -25,13 +25,14 @@ int _recieve(int fd, char *filename);
 
 
 
-//send
+//send file
 int _send(int fd, char *filename) {
 	int gd, size, n, total, r;
 	struct stat mystat, *sp;
 	char buf[BLKSIZE], ans[MAX];
 	printf("sending %s\n", filename);
 
+	//get file stat
 	printf("1. stat %s ", filename);
 	sp = &mystat;
 	r = stat(filename, sp);
@@ -62,9 +63,10 @@ int _send(int fd, char *filename) {
 
 	total = 0;
 
+	//open file for read/send
 	printf("3. open %s for READ\n", filename);
-	while (n = read(gd, buf, BLKSIZE)) {
-		write(fd, buf, n);
+	while (n = read(gd, buf, BLKSIZE)) {	//loop and read file
+		write(fd, buf, n);	//send file
 		total += n;
 		printf("n = %d, total = %d\n", n, total);
 		bzero(buf, BLKSIZE);
@@ -73,20 +75,13 @@ int _send(int fd, char *filename) {
 	return total;
 }
 
-
-
-
-
-
-
-
-
 //recieve
 int _recieve(int fd, char *filename) {
 	int gd, size, n, total, r;
 	char buf[BLKSIZE], ans[MAX], *responce, *num;
 	printf("recieving %s", filename);
 
+	//open file for write/create
 	printf("1. open % for WRITE\n", filename);
 	gd = open(filename, O_WRONLY | O_CREAT);
 	if (gd < 0) {
@@ -98,13 +93,13 @@ int _recieve(int fd, char *filename) {
 	read(fd, ans, MAX);
 	sscanf(ans, "%s %s", responce, num);
 
-
+	//if server ready to send
 	if (strcmp(responce, "OK")) {
 		r = atoi(num);
 
 		printf("3. WRITE %d bytes to %s\n", r, filename);
-		while (n = read(fd, buf, BLKSIZE)) {
-			write(gd, buf, n);
+		while (n = read(fd, buf, BLKSIZE)) {	//read file from server
+			write(gd, buf, n);	//write to file
 			total += n;
 			printf("n = %d, total = %d\n", n, total);
 			bzero(buf, BLKSIZE);
@@ -115,15 +110,4 @@ int _recieve(int fd, char *filename) {
 	}
 	return total;
 }
-
-
-
-
-
-
-
-
-
-
-
 
