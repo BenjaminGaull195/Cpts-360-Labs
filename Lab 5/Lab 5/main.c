@@ -197,7 +197,7 @@ INODE * find_inode(int dev, char *pathname) {
 	//tokenize pathname
 	printf("debug: parse pathname %s\n\n", pathname);
 	s = strtok(pathname, "/");
-	printf("debug: %s", s);
+	printf("debug: %s\n", s);
 	while (s) {
 		name[i] = s;
 		printf("debug: %s\n", s);
