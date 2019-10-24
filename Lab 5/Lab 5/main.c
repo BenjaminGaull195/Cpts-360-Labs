@@ -206,7 +206,7 @@ INODE * find_inode(int dev, char *pathname) {
 	}
 	n = i;
 	putchar('\n');
-
+	printf("debug: n = %d", n);
 	scanf("%s", temp);
 	
 	//set ip to root
