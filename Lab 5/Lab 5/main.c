@@ -213,7 +213,6 @@ INODE * find_inode(int dev, char *pathname) {
 	ip = (INODE *)ibuf + 1;
 	printf("debug: %d\n\n", ip);
 
-	scanf("%s", temp);
 
 	for (i = 0; i < n; ++i) {
 		printf("debug: begin search\n\n");
@@ -228,7 +227,7 @@ INODE * find_inode(int dev, char *pathname) {
 		//mailmans algorithm: convert (dev, ino) to INODE pointer
 		blk = (ino - 1) / 8 + inode_start;
 		offset = (ino - 1) % 8;
-		printf("debug: %d %d\n\n", blk, offset);
+		printf("debug: blk = %d offset = %d\n\n", blk, offset);
 		get_block(dev, blk, ibuf);
 		ip = (INODE *)ibuf + offset;
 		printf("debug: %d\n\n", ip);
