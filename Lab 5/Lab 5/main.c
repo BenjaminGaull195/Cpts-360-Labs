@@ -162,7 +162,7 @@ int search(INODE *ip, char *name) {
 			//may not need 
 			temp[dp->name_len] = 0;
 			if (!strcmp(temp, name)) {
-				inum = dp;
+				inum = dp->inode;
 				return inum;
 			}
 			cp += dp->rec_len;
