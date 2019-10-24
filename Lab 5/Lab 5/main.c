@@ -231,6 +231,7 @@ INODE * find_inode(int dev, char *pathname) {
 		ip = (INODE *)ibuf + offset;
 		printf("debug: %d\n\n", ip);
 
+		scanf("%s", tp);
 	}
 	return ip;
 }
