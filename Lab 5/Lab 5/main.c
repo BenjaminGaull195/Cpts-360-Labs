@@ -4,13 +4,14 @@
 #include <stdint.h>
 #include <time.h>
 #include <string.h>
-//#include <ext2fs/ext2_fs.h>
-#include <linux/ext2_fs.h>
+#include <ext2fs/ext2_fs.h>
+//#include <linux/ext2_fs.h>
 //#include <ext2fs/ext2_types.h>
 //#include "ext2_fs.h"
 
 //constants
 #define BLKSIZE 1024
+#define MAGIC 0xEF53
 
 
 //typedefs
@@ -51,7 +52,10 @@ int main(int argc, char *argv[]) {
 
 	//read super block, verify ext2
 	if (get_block(dev, 1, ibuf)) {
-
+		if ((SUPER *)ibuf->s_magic != MAGIC) {
+			printf("diskimage is not ext2\n");
+			exit(1);
+		}
 	}
 
 	//read group descriptor
