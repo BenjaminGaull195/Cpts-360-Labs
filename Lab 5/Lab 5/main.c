@@ -1,6 +1,7 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <time.h>
 #include <string.h>
 #include <ext2fs/ext2_fs.h>
@@ -13,16 +14,17 @@
 //typedefs
 typedef struct ext2_inode INODE;
 typedef struct ext2_super_block SUPER;
-typedef struct ext2_dir DIR;
+typedef struct ext2_dir_entry_2 DIR;
 typedef struct ext2_group_descriptor GD;
 
 
 //global variables
-char ibuf[BLKSIZE], sup_block[BLKSIZE], group_desc[BLKSIZE];
+char ibuf[BLKSIZE], sup_block[BLKSIZE], group_desc[BLKSIZE], buf[BLKSIZE], ubuf[BLKSIZE];
 INODE *ip, *root;
 int bmap, imap, inode_start;
+int ninodes, nblocks;
 char *name[256];
-
+uint32_t *up, *uup;
 
 
 //function prototypes
@@ -40,6 +42,9 @@ int get_block(int dev, int blk, char *buf)
 
 int main(int argc, char *argv[]) {
 	int dev = open("diskimage", O_RDONLY);   // OR  O_RDWR
+	char pathname[256];
+	int i, x, y;
+
 
 	//read super block, verify ext2
 	if (get_block(dev, 1, ibuf)) {
@@ -55,7 +60,47 @@ int main(int argc, char *argv[]) {
 	ip = (INODE *)ibuf + 1;
 	show_dir(ip);
 
+	//find dir
+	//// get dir to find
 
+	////find inode
+	find_inode(dev, pathname);
+	////print dir info
+	for (i = 0; i < 15; ++i) {
+		if (i < 12) {
+			print("%d\n", ip->i_block[i]);
+
+		}
+		else if (i == 12) {
+			//iterate over indirect block list
+			get_block(dev, ip->i_block[i], buf);
+			up = (uint32_t *)buf;
+			while (up != 0) {
+				printf("%d\n", ip);
+				++up;
+			}
+		}
+		else  if (i == 13) {
+			//iterate over double indirect block list
+			get_block(dev, ip->i_block[i], buf);
+			up = (uint32_t *)buf;
+			while (up != 0) {
+				get_block(dev, ip->i_block[i], ubuf);
+				uup = (uint32_t *)ubuf;
+				while (uup != 0) {
+					printf("%d\n", ip);
+					++uup;
+				}
+
+				++up;
+			}
+
+
+		}
+		else {
+
+		}
+	}
 
 
 
@@ -89,7 +134,7 @@ int show_dir(INODE *ip) {
 			strncpy(temp, dp->name, dp->name_len);
 			temp[dp->name_len] = 0;
 			printf("%4d %4d %4d %s\n", dp->inode, dp->rec_len, dp->name_len, temp);
-			cp += dp_rec_len;
+			cp += dp->rec_len;
 			dp = (DIR *)cp;
 		}
 	}
@@ -145,7 +190,7 @@ INODE * find_inode(int dev, char *pathname) {
 	get_block(dev, inode_start, ibuf);
 	ip = (INODE *)ibuf + 1;
 
-	for (i = 0; i < n) {
+	for (i = 0; i < n; ++i) {
 		ino = search(ip, name[i]);
 
 		if (ino == 0) {
