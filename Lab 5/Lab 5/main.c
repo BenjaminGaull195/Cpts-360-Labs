@@ -69,18 +69,7 @@ int main(int argc, char *argv[]) {
 	get_block(dev, inode_start, ibuf);
 	ip = (INODE *)ibuf + 1;
 	show_dir(ip);
-	//printf("show_dir complete\n");
-
-	//find dir
-	//// get dir to find
-	//pathname = "/Z/hugefile";
-	printf("debug: strcpy pathname\n\n");
-	//strcpy(pathname, "/Z/hugefile");
-	////find inode
-	//printf("Enter pathname: ");
-	//scanf(pathname);
-
-	printf("debug: begin find_inode\n\n");
+	
 	find_inode(dev, pathname);
 	////print dir info
 	for (i = 0; i < 15; ++i) {
@@ -206,7 +195,9 @@ INODE * find_inode(int dev, char *pathname) {
 	char *name[256], *s;
 
 	//tokenize pathname
+	printf("debug: parse pathname\n\n");
 	s = strtok(pathname, '/');
+	printf("debug: %s", s);
 	while (s) {
 		name[i] = s;
 		printf("debug: %s\n", s);
