@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
 	get_block(dev, inode_start, ibuf);
 	ip = (INODE *)ibuf + 1;
 	show_dir(ip);
-	printf("show_dir complete\n");
+	//printf("show_dir complete\n");
 
 	//find dir
 	//// get dir to find
@@ -126,7 +126,7 @@ int readGroupDesc(char *gdp) {
 	inode_start = group_desc->bg_inode_table;
 
 	//print
-	printf("bmap = %d\nimap = %d\ninode_start = %d", bmap, imap, inode_start);
+	printf("bmap = %d\nimap = %d\ninode_start = %d\n", bmap, imap, inode_start);
 
 }
 
@@ -150,11 +150,8 @@ int show_dir(INODE *ip) {
 			strncpy(temp, dp->name, dp->name_len);
 			temp[dp->name_len] = 0;
 			printf("%4d %4d %4d %s\n", dp->inode, dp->rec_len, dp->name_len, temp);
-			printf("no error ");
 			cp += dp->rec_len;
-			printf("no error ");
 			dp = (DIR *)cp;
-			printf("no error\n");
 
 		}
 	}
@@ -174,6 +171,10 @@ int search(INODE *ip, char *name) {
 		get_block(dev, ip->i_block[i], sbuf);
 		dp = (DIR *)sbuf;
 		cp = sbuf;
+		putchar('\n');
+		printf("Debug: %d %d\n\n", dp, cp);
+
+
 
 		while (cp < sbuf + BLKSIZE) {
 			strncpy(temp, dp->name, dp->name_len);
@@ -181,10 +182,13 @@ int search(INODE *ip, char *name) {
 			temp[dp->name_len] = 0;
 			if (!strcmp(temp, name)) {
 				inum = dp->inode;
+				printf("debug: %d\n\n", inum);
 				return inum;
 			}
 			cp += dp->rec_len;
 			dp = (DIR *)cp;
+			printf("Debug: %d %d\n\n", dp, cp);
+
 		}
 
 	}
@@ -200,18 +204,21 @@ INODE * find_inode(int dev, char *pathname) {
 	s = strtok(pathname, '/');
 	while (s) {
 		name[i] = s;
+		printf("debug: %s\n", s);
 		s = strtok(NULL, '/');
 		++i;
 	}
 	n = i;
-
+	putchar('\n');
 	
 	//set ip to root
 	get_block(dev, inode_start, ibuf);
 	ip = (INODE *)ibuf + 1;
+	printf("debug: %d\n\n", ip);
 
 	for (i = 0; i < n; ++i) {
 		ino = search(ip, name[i]);
+		print("debug: %d\n\n", ino);
 
 		if (ino == 0) {
 			printf("can't find %s\n", name[i]);
@@ -221,8 +228,10 @@ INODE * find_inode(int dev, char *pathname) {
 		//mailmans algorithm: convert (dev, ino) to INODE pointer
 		blk = (ino - 1) / 8 + inode_start;
 		offset = (ino - 1) % 8;
+		printf("debug: %d %d\n\n", blk, offset);
 		get_block(dev, blk, ibuf);
 		ip = (INODE *)ibuf + offset;
+		printf("debug: %d\n\n", ip);
 	}
 	return ip;
 }
