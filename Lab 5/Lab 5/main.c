@@ -82,7 +82,7 @@ int main(int argc, char *argv[]) {
 			get_block(dev, ip->i_block[i], buf);
 			up = (uint32_t *)buf;
 			while (*(up) != 0) {
-				printf("ip = %d\n", *(up));
+				printf("block %d\n", *(up));
 				++up;
 			}
 		}
@@ -94,7 +94,7 @@ int main(int argc, char *argv[]) {
 				get_block(dev, ip->i_block[i], ubuf);
 				uup = (uint32_t *)ubuf;
 				while (*(uup) != 0) {
-					printf("ip = %d\n", *(uup));
+					printf("block %d\n", *(uup));
 					++uup;
 				}
 
@@ -163,27 +163,22 @@ int search(INODE *ip, char *name) {
 			break;
 		}
 
-		printf("debug: get block\n\n");
 		get_block(dev, ip->i_block[i], sbuf);
 		dp = (DIR *)sbuf;
 		cp = sbuf;
 		putchar('\n');
-		printf("Debug: %d %d\n\n", dp, cp);
 
 
-		printf("debug: get block\n\n");
 		while (cp < sbuf + BLKSIZE) {
 			strncpy(temp, dp->name, dp->name_len);
 			//may not need 
 			temp[dp->name_len] = 0;
 			if (!strcmp(temp, name)) {
 				inum = dp->inode;
-				printf("debug: %d\n\n", inum);
 				return inum;
 			}
 			cp += dp->rec_len;
 			dp = (DIR *)cp;
-			printf("Debug: %d %d\n\n", dp, cp);
 
 		}
 
@@ -206,17 +201,12 @@ INODE * find_inode(int dev, char *pathname) {
 	n = i;
 	
 	//set ip to root
-	printf("debug: get block\n\n");
 	get_block(dev, inode_start, ibuf);
-	printf("debug: got block\n\ndebug: typecast buf\n\n");
 	ip = (INODE *)ibuf + 1;
-	printf("debug: %d\n\n", ip);
 
 
 	for (i = 0; i < n; ++i) {
-		printf("debug: begin search\n\n");
 		ino = search(ip, name[i]);
-		printf("debug: ino = %d\n\n", ino);
 
 		if (ino == 0) {
 			printf("can't find %s\n", name[i]);
@@ -226,10 +216,8 @@ INODE * find_inode(int dev, char *pathname) {
 		//mailmans algorithm: convert (dev, ino) to INODE pointer
 		blk = (ino - 1) / 8 + inode_start;
 		offset = (ino - 1) % 8;
-		printf("debug: blk = %d offset = %d\n\n", blk, offset);
 		get_block(dev, blk, ibuf);
 		ip = (INODE *)ibuf + offset;
-		printf("debug: ip = %d, %d \n\n", ip, i);
 
 	}
 	return ip;
