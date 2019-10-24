@@ -71,7 +71,8 @@ int main(int argc, char *argv[]) {
 
 	//find dir
 	//// get dir to find
-
+	//pathname = "/Z/hugefile";
+	strcpy(pathname, "/Z/hugefile");
 	////find inode
 	find_inode(dev, pathname);
 	////print dir info
