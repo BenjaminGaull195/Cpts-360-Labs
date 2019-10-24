@@ -75,8 +75,11 @@ int main(int argc, char *argv[]) {
 	//// get dir to find
 	//pathname = "/Z/hugefile";
 	printf("debug: strcpy pathname\n\n");
-	strcpy(pathname, "/Z/hugefile");
+	//strcpy(pathname, "/Z/hugefile");
 	////find inode
+	printf("Enter pathname: ");
+	scanf(pathname);
+
 	printf("debug: begin find_inode");
 	find_inode(dev, pathname);
 	////print dir info
