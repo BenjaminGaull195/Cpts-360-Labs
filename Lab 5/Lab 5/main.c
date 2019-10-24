@@ -148,8 +148,12 @@ int show_dir(INODE *ip) {
 			strncpy(temp, dp->name, dp->name_len);
 			temp[dp->name_len] = 0;
 			printf("%4d %4d %4d %s\n", dp->inode, dp->rec_len, dp->name_len, temp);
+			printf("no error\n");
 			cp += dp->rec_len;
+			printf("no error\n");
 			dp = (DIR *)cp;
+			printf("no error\n");
+
 		}
 	}
 }
