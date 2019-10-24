@@ -82,7 +82,7 @@ int main(int argc, char *argv[]) {
 			get_block(dev, ip->i_block[i], buf);
 			up = (uint32_t *)buf;
 			while (*(up) != 0) {
-				printf("ip = %d\n", up);
+				printf("ip = %d\n", *(up));
 				++up;
 			}
 		}
@@ -94,7 +94,7 @@ int main(int argc, char *argv[]) {
 				get_block(dev, ip->i_block[i], ubuf);
 				uup = (uint32_t *)ubuf;
 				while (*(uup) != 0) {
-					printf("ip = %d\n", uup);
+					printf("ip = %d\n", *(uup));
 					++uup;
 				}
 
