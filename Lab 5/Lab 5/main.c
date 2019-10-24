@@ -47,7 +47,7 @@ int get_block(int dev, int blk, char *buf)
 
 int main(int argc, char *argv[]) {
 	dev = open("diskimage", O_RDONLY);   // OR  O_RDWR
-	char pathname[256] = "/Z/hugefile";
+	char pathname[256];// = "/Z/hugefile";
 	int i, x, y;
 
 
@@ -69,6 +69,9 @@ int main(int argc, char *argv[]) {
 	get_block(dev, inode_start, ibuf);
 	ip = (INODE *)ibuf + 1;
 	show_dir(ip);
+
+	printf("Enter pathname : ");
+	fgets(pathname, 256, stdin);         // get a line (end with \n) from stdin
 	
 	find_inode(dev, pathname);
 	////print dir info
