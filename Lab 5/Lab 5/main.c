@@ -4,9 +4,9 @@
 #include <stdint.h>
 #include <time.h>
 #include <string.h>
-#include <ext2fs/ext2_fs.h>
+//#include <ext2fs/ext2_fs.h>
 //#include <ext2fs/ext2_types.h>
-//#include "ext2_fs.h"
+#include "ext2_fs.h"
 
 //constants
 #define BLKSIZE 1024
