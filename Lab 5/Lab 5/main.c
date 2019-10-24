@@ -82,7 +82,7 @@ int main(int argc, char *argv[]) {
 			get_block(dev, ip->i_block[i], buf);
 			up = (uint32_t *)buf;
 			while (up != 0) {
-				printf("%d\n", ip);
+				printf("ip = %d\n", ip);
 				++up;
 			}
 		}
@@ -94,7 +94,7 @@ int main(int argc, char *argv[]) {
 				get_block(dev, ip->i_block[i], ubuf);
 				uup = (uint32_t *)ubuf;
 				while (uup != 0) {
-					printf("%d\n", ip);
+					printf("ip = %d\n", ip);
 					++uup;
 				}
 
@@ -231,7 +231,6 @@ INODE * find_inode(int dev, char *pathname) {
 		ip = (INODE *)ibuf + offset;
 		printf("debug: ip = %d, %d \n\n", ip, i);
 
-		scanf("%s", tp);
 	}
 	return ip;
 }
