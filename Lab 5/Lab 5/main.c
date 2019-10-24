@@ -72,7 +72,8 @@ int main(int argc, char *argv[]) {
 
 	printf("Enter pathname : ");
 	fgets(pathname, 256, stdin);         // get a line (end with \n) from stdin
-	strcpy(pathname, "/Z/hugefile");
+	pathname[strlen(pathname) - 1] = 0;
+										 //strcpy(pathname, "/Z/hugefile");
 	
 	find_inode(dev, pathname);
 	////print dir info
