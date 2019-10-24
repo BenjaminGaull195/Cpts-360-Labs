@@ -156,12 +156,14 @@ int search(INODE *ip, char *name) {
 	DIR *dp;
 	char *cp;
 	int i, inum = 0;
+	char temp[24];
 
 	for (i = 0; i < 12; ++i) {
 		if (ip->i_block[i] == 0) {
 			break;
 		}
 
+		printf("debug: get block\n\n");
 		get_block(dev, ip->i_block[i], sbuf);
 		dp = (DIR *)sbuf;
 		cp = sbuf;
@@ -169,7 +171,8 @@ int search(INODE *ip, char *name) {
 		printf("Debug: %d %d\n\n", dp, cp);
 
 
-
+		printf("debug: get block\n\n");
+		scanf("%s", temp);
 		while (cp < sbuf + BLKSIZE) {
 			strncpy(temp, dp->name, dp->name_len);
 			//may not need 
@@ -192,31 +195,30 @@ int search(INODE *ip, char *name) {
 
 INODE * find_inode(int dev, char *pathname) {
 	int ino, blk, offset, n = 0, i = 0;
-	char *name[256], *s, temp;
+	char *name[256], *s, temp[24];
 
 	//tokenize pathname
-	printf("debug: parse pathname %s\n\n", pathname);
 	s = strtok(pathname, "/");
-	printf("debug: %s\n", s);
 	while (s) {
 		name[i] = s;
-		printf("debug: %s\n", s);
 		s = strtok(NULL, "/");
 		++i;
 	}
 	n = i;
-	putchar('\n');
-	printf("debug: n = %d", n);
-	scanf("%s", temp);
 	
 	//set ip to root
+	printf("debug: get block\n\n");
 	get_block(dev, inode_start, ibuf);
+	printf("debug: got block\n\ndebug: typecast buf\n\n");
 	ip = (INODE *)ibuf + 1;
 	printf("debug: %d\n\n", ip);
 
+	scanf("%s", temp);
+
 	for (i = 0; i < n; ++i) {
+		printf("debug: begin search\n\n");
 		ino = search(ip, name[i]);
-		printf("debug: %d\n\n", ino);
+		printf("debug: ino = %d\n\n", ino);
 
 		if (ino == 0) {
 			printf("can't find %s\n", name[i]);
@@ -230,6 +232,8 @@ INODE * find_inode(int dev, char *pathname) {
 		get_block(dev, blk, ibuf);
 		ip = (INODE *)ibuf + offset;
 		printf("debug: %d\n\n", ip);
+
+		scanf("%s", temp);
 	}
 	return ip;
 }
