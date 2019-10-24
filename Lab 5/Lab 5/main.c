@@ -62,7 +62,7 @@ int main(int argc, char *argv[]) {
 
 	//read group descriptor
 	get_block(dev, 2, group_desc);
-	printGroupDesc(group_desc);
+	readGroupDesc(group_desc);
 
 	//read root inode
 	get_block(dev, inode_start, ibuf);
@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
 	////print dir info
 	for (i = 0; i < 15; ++i) {
 		if (i < 12) {
-			print("%d\n", ip->i_block[i]);
+			printf("%d\n", ip->i_block[i]);
 
 		}
 		else if (i == 12) {
