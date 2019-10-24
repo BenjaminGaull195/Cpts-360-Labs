@@ -218,7 +218,7 @@ INODE * find_inode(int dev, char *pathname) {
 
 	for (i = 0; i < n; ++i) {
 		ino = search(ip, name[i]);
-		print("debug: %d\n\n", ino);
+		printf("debug: %d\n\n", ino);
 
 		if (ino == 0) {
 			printf("can't find %s\n", name[i]);
