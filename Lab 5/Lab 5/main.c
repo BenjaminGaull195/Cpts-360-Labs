@@ -229,7 +229,7 @@ INODE * find_inode(int dev, char *pathname) {
 		printf("debug: blk = %d offset = %d\n\n", blk, offset);
 		get_block(dev, blk, ibuf);
 		ip = (INODE *)ibuf + offset;
-		printf("debug: %d\n\n", ip);
+		printf("debug: ip = %d, %d \n\n", ip, i);
 
 		scanf("%s", tp);
 	}
