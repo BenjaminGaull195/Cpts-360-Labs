@@ -201,7 +201,7 @@ INODE * find_inode(int dev, char *pathname) {
 	while (s) {
 		name[i] = s;
 		printf("debug: %s\n", s);
-		s = strtok(NULL, '/');
+		s = strtok(NULL, "/");
 		++i;
 	}
 	n = i;
