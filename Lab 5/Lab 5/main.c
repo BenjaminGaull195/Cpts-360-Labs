@@ -63,11 +63,13 @@ int main(int argc, char *argv[]) {
 	//read group descriptor
 	get_block(dev, 2, group_desc);
 	readGroupDesc(group_desc);
+	
 
 	//read root inode
 	get_block(dev, inode_start, ibuf);
 	ip = (INODE *)ibuf + 1;
 	show_dir(ip);
+	printf("show_dir complete\n");
 
 	//find dir
 	//// get dir to find
@@ -148,9 +150,9 @@ int show_dir(INODE *ip) {
 			strncpy(temp, dp->name, dp->name_len);
 			temp[dp->name_len] = 0;
 			printf("%4d %4d %4d %s\n", dp->inode, dp->rec_len, dp->name_len, temp);
-			printf("no error\n");
+			printf("no error ");
 			cp += dp->rec_len;
-			printf("no error\n");
+			printf("no error ");
 			dp = (DIR *)cp;
 			printf("no error\n");
 
