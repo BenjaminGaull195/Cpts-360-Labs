@@ -5,7 +5,8 @@
 #include <time.h>
 #include <string.h>
 #include <ext2fs/ext2_fs.h>
-//#include <ext2/ext2_types>
+//#include <ext2fs/ext2_types.h>
+//#include "ext2_fs.h"
 
 //constants
 #define BLKSIZE 1024
@@ -22,9 +23,10 @@ typedef struct ext2_group_descriptor GD;
 char ibuf[BLKSIZE], sup_block[BLKSIZE], group_desc[BLKSIZE], buf[BLKSIZE], ubuf[BLKSIZE];
 INODE *ip, *root;
 int bmap, imap, inode_start;
-int ninodes, nblocks;
+//int ninodes, nblocks;
 char *name[256];
 uint32_t *up, *uup;
+int dev;
 
 
 //function prototypes
@@ -41,7 +43,7 @@ int get_block(int dev, int blk, char *buf)
 }
 
 int main(int argc, char *argv[]) {
-	int dev = open("diskimage", O_RDONLY);   // OR  O_RDWR
+	dev = open("diskimage", O_RDONLY);   // OR  O_RDWR
 	char pathname[256];
 	int i, x, y;
 
@@ -160,7 +162,7 @@ int search(INODE *ip, char *name) {
 			//may not need 
 			temp[dp->name_len] = 0;
 			if (!strcmp(temp, name)) {
-				inum = dp->;
+				inum = dp;
 				return inum;
 			}
 			cp += dp->rec_len;
