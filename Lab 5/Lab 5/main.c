@@ -172,7 +172,6 @@ int search(INODE *ip, char *name) {
 
 
 		printf("debug: get block\n\n");
-		scanf("%s", tp);
 		while (cp < sbuf + BLKSIZE) {
 			strncpy(temp, dp->name, dp->name_len);
 			//may not need 
@@ -232,7 +231,6 @@ INODE * find_inode(int dev, char *pathname) {
 		ip = (INODE *)ibuf + offset;
 		printf("debug: %d\n\n", ip);
 
-		scanf("%s", tp);
 	}
 	return ip;
 }
