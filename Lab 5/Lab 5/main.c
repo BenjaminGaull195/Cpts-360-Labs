@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
 	////print dir info
 	for (i = 0; i < 15; ++i) {
 		if (i < 12) {
-			printf("%d\n", ip->i_block[i]);
+			printf("block %d\n", ip->i_block[i]);
 
 		}
 		else if (i == 12) {
@@ -82,7 +82,7 @@ int main(int argc, char *argv[]) {
 			get_block(dev, ip->i_block[i], buf);
 			up = (uint32_t *)buf;
 			while (*(up) != 0) {
-				printf("block %d\n", *(up));
+				printf("indirect block %d\n", *(up));
 				++up;
 			}
 		}
@@ -94,7 +94,7 @@ int main(int argc, char *argv[]) {
 				get_block(dev, ip->i_block[i], ubuf);
 				uup = (uint32_t *)ubuf;
 				while (*(uup) != 0) {
-					printf("block %d\n", *(uup));
+					printf("double indirect block %d\n", *(uup));
 					++uup;
 				}
 
