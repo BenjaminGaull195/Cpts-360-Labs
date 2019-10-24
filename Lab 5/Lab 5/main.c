@@ -80,7 +80,7 @@ int main(int argc, char *argv[]) {
 	//printf("Enter pathname: ");
 	//scanf(pathname);
 
-	printf("debug: begin find_inode");
+	printf("debug: begin find_inode\n\n");
 	find_inode(dev, pathname);
 	////print dir info
 	for (i = 0; i < 15; ++i) {
