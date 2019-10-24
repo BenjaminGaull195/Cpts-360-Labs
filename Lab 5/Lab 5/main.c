@@ -47,7 +47,7 @@ int get_block(int dev, int blk, char *buf)
 
 int main(int argc, char *argv[]) {
 	dev = open("diskimage", O_RDONLY);   // OR  O_RDWR
-	char pathname[256];
+	char pathname[256] = "/Z/hugefile";
 	int i, x, y;
 
 
@@ -77,8 +77,8 @@ int main(int argc, char *argv[]) {
 	printf("debug: strcpy pathname\n\n");
 	//strcpy(pathname, "/Z/hugefile");
 	////find inode
-	printf("Enter pathname: ");
-	scanf(pathname);
+	//printf("Enter pathname: ");
+	//scanf(pathname);
 
 	printf("debug: begin find_inode");
 	find_inode(dev, pathname);
