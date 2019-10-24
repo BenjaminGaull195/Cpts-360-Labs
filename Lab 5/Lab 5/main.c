@@ -29,6 +29,7 @@ int bmap, imap, inode_start;
 char *name[256];
 uint32_t *up, *uup;
 int dev;
+SUPER *sup;
 
 
 //function prototypes
@@ -52,7 +53,8 @@ int main(int argc, char *argv[]) {
 
 	//read super block, verify ext2
 	if (get_block(dev, 1, ibuf)) {
-		if ((SUPER *)ibuf->s_magic != MAGIC) {
+		sup = (SUPER *)ibuf;
+		if (sup->s_magic != MAGIC) {
 			printf("diskimage is not ext2\n");
 			exit(1);
 		}
