@@ -156,7 +156,7 @@ int search(INODE *ip, char *name) {
 	DIR *dp;
 	char *cp;
 	int i, inum = 0;
-	char temp[24];
+	char tp[24];
 
 	for (i = 0; i < 12; ++i) {
 		if (ip->i_block[i] == 0) {
@@ -172,7 +172,7 @@ int search(INODE *ip, char *name) {
 
 
 		printf("debug: get block\n\n");
-		scanf("%s", temp);
+		scanf("%s", tp);
 		while (cp < sbuf + BLKSIZE) {
 			strncpy(temp, dp->name, dp->name_len);
 			//may not need 
@@ -195,7 +195,7 @@ int search(INODE *ip, char *name) {
 
 INODE * find_inode(int dev, char *pathname) {
 	int ino, blk, offset, n = 0, i = 0;
-	char *name[256], *s, temp[24];
+	char *name[256], *s, tp[24];
 
 	//tokenize pathname
 	s = strtok(pathname, "/");
@@ -232,7 +232,7 @@ INODE * find_inode(int dev, char *pathname) {
 		ip = (INODE *)ibuf + offset;
 		printf("debug: %d\n\n", ip);
 
-		scanf("%s", temp);
+		scanf("%s", tp);
 	}
 	return ip;
 }
