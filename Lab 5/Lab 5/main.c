@@ -192,7 +192,7 @@ int search(INODE *ip, char *name) {
 
 INODE * find_inode(int dev, char *pathname) {
 	int ino, blk, offset, n = 0, i = 0;
-	char *name[256], *s;
+	char *name[256], *s, temp;
 
 	//tokenize pathname
 	printf("debug: parse pathname %s\n\n", pathname);
@@ -206,6 +206,8 @@ INODE * find_inode(int dev, char *pathname) {
 	}
 	n = i;
 	putchar('\n');
+
+	scanf("%s", temp);
 	
 	//set ip to root
 	get_block(dev, inode_start, ibuf);
