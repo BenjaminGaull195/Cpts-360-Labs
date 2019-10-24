@@ -118,6 +118,10 @@ int main(int argc, char *argv[]) {
 
 int readGroupDesc(char *gdp) {
 	//typecast buf to Group Descriptor
+	GD *group_desc = (GD *)gdp;
+	bmap = group_desc->bg_block_bitmap;
+	imap = group_desc->bg_inode_bitmap;
+	inode_start = group_desc->bg_inode_table;
 
 	//print
 	printf("bmap = %d\nimap = %d\ninode_start = %d", bmap, imap, inode_start);
