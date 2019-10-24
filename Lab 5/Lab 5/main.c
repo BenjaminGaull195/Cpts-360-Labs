@@ -4,7 +4,8 @@
 #include <stdint.h>
 #include <time.h>
 #include <string.h>
-#include <ext2fs/ext2_fs.h>
+//#include <ext2fs/ext2_fs.h>
+#include <linux/ext2_fs.h>
 //#include <ext2fs/ext2_types.h>
 //#include "ext2_fs.h"
 
@@ -16,7 +17,7 @@
 typedef struct ext2_inode INODE;
 typedef struct ext2_super_block SUPER;
 typedef struct ext2_dir_entry_2 DIR;
-typedef struct ext2_group_descriptor GD;
+typedef struct ext2_group_desc GD;
 
 
 //global variables
