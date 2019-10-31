@@ -190,7 +190,6 @@ int findmyname(MINODE *parent, uint32_t myino, char myname[])
 	// find mynio in parent data block; copy name string to myname[ ];
 	//get_block(fd, parent->inode.i_block[0], buf);
 	INODE *ip = &parent->inode;
-	char buf[BLKSIZE];
 	int i;
 	DIR *dp;
 	char *cp;
@@ -212,7 +211,7 @@ int findmyname(MINODE *parent, uint32_t myino, char myname[])
 			return 0;
 		}
 		cp += dp->rec_len;
-		dp = (DIR *)cp
+		dp = (DIR *)cp;
 	}
 
 
