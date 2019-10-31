@@ -70,16 +70,22 @@ int main(int argc, char *argv[]) {
 
 		//cmd_ptrs[find_cmd(cmd)](pathname);
 		if (strcmp(cmd, "ls") == 0) {
-
+			ls(pathname);
 		}
-		else if (strcmp(cmd, "cd")) {
-
+		else if (strcmp(cmd, "cd") == 0) {
+			chdir(pathname);
 		}
-		else if (strcmp(cmd, "pwd")) {
-
+		else if (strcmp(cmd, "pwd") == 0) {
+			pwd(running->cwd);
 		}
-		else if (strcmp(cmd, "quit")) {
-
+		else if (strcmp(cmd, "quit") == 0) {
+			quit();
+		}
+		else if (strcmp(cmd, "mkdir") == 0) {
+			make_dir(pathname);
+		}
+		else if (strcmp(cmd, "creat") == 0) {
+			creat_file(pathname);
 		}
 		else {
 			printf("%s is not an available command\n");
