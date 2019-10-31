@@ -1,5 +1,4 @@
 #include <ext2fs/ext2_fs.h>
-#include "type.h"
 
 //constants
 #define SUPERBLOCK 1
