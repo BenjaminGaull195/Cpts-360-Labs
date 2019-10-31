@@ -1,0 +1,264 @@
+#include <ext2fs/ext2_fs.h>
+#include <stdio.h>
+#include <stddef.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <fcntl.h>
+#include <libgen.h>
+#include <string.h>
+#include <sys/stat.h>
+
+#include "type.h"
+
+//global
+int fd, dev;
+int ninodes, nblocks;
+int bmap, imap, inode_start;
+
+char line[256], cmd[32], pathname[256];
+
+char gpath[256];
+char *name;
+int n;
+
+MINODE minode[NMINODE];
+MINODE *root;
+PROC   proc[NPROC], *running;
+
+char *t1 = "xwrxwrxwr-------";
+char *t2 = "----------------";
+
+//typedefs
+typedef void(*cmd_ptr)();
+
+
+//function prototypes
+int init();
+int mount_root();
+void ls(char *pathname);
+void chdir(char *pathname);
+void pwd(MINODE *wd);
+void quit();
+
+int find_cmd(char *command);
+
+
+char *commands[32] = { "ls", "cd", "pwd", "quit", 0 };
+cmd_ptr cmd_ptrs[32] = { &ls, &chdir, &pwd, &quit };
+
+
+int main(int argc, char *argv[]) {
+	init();
+	mount_root();
+	int i;
+
+	while (1) {
+		//print available commands
+		fgets(line, 256, stdin);
+		i = sscanf(line, "%s %s", cmd, pathname);
+
+		cmd_ptrs[find_cmd(cmd)](pathname);
+	}
+	   	  
+	return 0;
+}
+
+
+int init() {
+	int i, j;
+	for (i = 0; i < NMINODE; ++i) {
+		minode[i].refCount = 0;
+	}
+	for (i = 0; i < NPROC; ++i) {
+		proc[i].status = READY;
+		proc[i].pid = i;
+		proc[i].uid = i;
+		for (j = 0; j < NFD; ++j) {
+			proc[i].fd[j] = 0;
+		}
+		proc[i].next = &proc[i + 1];
+	}
+	proc[NPROC - 1].next = &proc[0];
+	running = &proc[0];
+
+	root = 0;
+
+}
+
+
+int mount_root() {
+	char buf[BLKSIZE];
+	SUPER *sp;
+	GD * gp;
+	fd = open("diskImage", O_RDWR);
+	if (fd < 0) {
+		printf("Failed to open diskImage\n");
+		exit(1);
+	}
+	
+	get_block(fd, SUPERBLOCK, buf);
+	sp = (SUPER *)buf;
+
+	if (sp->s_magic != SUPER_MGAIC) {
+		printf("diskImage is not ext2\n");
+		exit(1);
+	}
+
+	ninodes = sp->s_inodes_count;
+	nblocks = sp->s_blocks_count;
+
+	get_block(fd, GDBLOCK, buf);
+	gp = (GD *)buf;
+	bmap = gp->bg_block_bitmap;
+	imap = gp->bg_inode_bitmap;
+	inode_start = gp->bg_inode_table;
+
+	root = iget(fd, 2);
+
+	proc[0].cwd = iget(fd, 2);
+	proc[1].cwd = iget(fd, 2);
+
+	running = &proc[0];
+}
+
+//helper functions
+
+int ls_file(int ino, char *fname) {
+	MINODE *mip = iget(fd, ino);
+	INODE *ip = mip->inode;
+	char ftime[64], linkname[128];
+
+	//print file mode
+	if ((ip->i_mode & 0xF000) == 0x8000) {
+		printf("%c", '-');
+	}
+	if ((ip->i_mode & 0xF000) == 0x4000) {
+		printf("%c", 'd');
+	}
+	if ((ip->i_mode & 0xF000) == 0xA000) {
+		printf("%c", 'l');
+	}
+	for (i = 8; i >= 0; --i) {	//print file permissions
+		if (ip->i_mode & (1 << i)) {
+			printf("%c", t1[i]);
+		}
+		else {
+			printf("%c", t2[i]);
+		}
+	}	//print file info
+	printf("%4d", ip->i_links_count);
+	printf("%4d", ip->i_gid);
+	printf("%4d", ip->i_uid);
+	printf("%8d", ip->i_size);
+	strcpy(ftime, ctime(&ip->i_ctime));
+	ftime[strlen(ftime) - 1] = 0;
+	printf("%s", ftime);
+	printf("%s", basename(fname));
+	if ((ip->i_mode & 0xF000) == 0xA000) { //print symbolic link
+		readlink(fname, linkname, 128);
+		printf(" - > %s", linkname);
+	}
+	printf("\n");
+}
+
+int ls_dir(char *dname) {
+	int ino = getino(pathname);
+	MINODE *mip = iget(fd, ino);
+	char buf[BLKSIZE];
+	DIR *dp;
+	int i = 0;
+
+	get_block(fd, mip->inode.i_block[0], buf);
+	dp = (DIR *)buf;
+
+	while (i < BLKSIZE) {
+		mip = iget(fd, dp->inode);
+		ls_file(mip->ino, dp->name);
+		i += dp->rec_len;
+		dp += i;
+	}
+}
+
+
+//command functions
+int find_cmd(char *command) {
+	int i = 0;
+	for (i = 0; i < 32; ++i) {
+		if (strcmp(command, commands[i]) == 0) {
+			return i;
+		}
+	}
+}
+
+
+void ls(char *pathname) {
+	char *name;
+	if (strcmp(pathname, "") == 0) {	//ls for cwd
+		name = running->cwd.inode.
+			ls_dir(name);
+	}
+}
+
+void chdir(char *pathname) {
+	if (strcmp(pathname, "") == 0) {
+		running->cwd = root;
+	}
+	else {
+		int ino = getino(pathname);
+		if (ino == 0) {
+			printf("Error: failed to get ino\n");
+			return;
+		}
+		MINODE *mip = iget(fd, ino);
+		if (mip->inode.i_mode != FILE_MODE) {
+			printf("pathname is not a DIR\n");
+			return;
+		}
+		iput(running->cwd);
+		running->cwd = mip;
+	}
+
+}
+
+void rpwd(MINODE *wd) {
+	int ino, pino;
+	INODE *pip;
+	char buf[BLKSIZE], myname[128];
+
+
+	if (wd == root) {
+		return;
+	}
+	pino = findino(wd, &ino);
+	pip = iget(fd, pino);
+	findmyname(pip, ino, myname);
+
+	rpwd(pip);
+	printf("/%s", myname);
+
+}
+
+void pwd(MINODE *wd) {
+	if (wd == root) {
+		printf("/\n");
+	}
+	else {
+		rpwd(wd);
+	}
+}
+
+void quit() {
+	//write minodes to disk
+	int i;
+	MINODE *mip;
+	for (i - 0; i < NMINODE; ++i) {
+		mip = &minode[i];
+		if (mip->refCount && mip->dirty) {
+			mip->refCount = 1;
+			iput(mip);
+		}
+	}
+
+	//exit
+	exit(0);
+}
