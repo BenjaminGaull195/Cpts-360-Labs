@@ -140,7 +140,7 @@ int search(MINODE *mip, char *name)
 		while (cp < sbuf + BLKSIZE) {
 			strncpy(temp, dp->name, dp->name_len);
 			temp[dp->name_len] = 0;
-			print("%8d%8d%8u %s", dp->inode, dp->rec_len, dp->name_len, temp);
+			printf("%8d%8d%8u %s", dp->inode, dp->rec_len, dp->name_len, temp);
 
 			if (strcmp(name, temp) == 0) {
 				printf("found %s : inum = %d\n", name, dp->inode);
