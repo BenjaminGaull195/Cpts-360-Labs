@@ -164,7 +164,8 @@ int mount_root() {
 
 	printf("bmp=%d imap=%d iblock = %d\n", bmap, imap, iblock);
 
-	root = iget(fd, 2);
+	root = iget(fd, inode_start);
+
 
 	proc[0].cwd = iget(fd, 2);
 	proc[1].cwd = iget(fd, 2);
