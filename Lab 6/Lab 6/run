@@ -1,0 +1,3 @@
+mkfs disk 1440
+gcc main.c util.c type.h
+./a.out
