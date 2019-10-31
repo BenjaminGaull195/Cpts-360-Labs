@@ -174,9 +174,9 @@ int mount_root() {
 
 int ls_file(int ino, char *fname) {
 	MINODE *mip = iget(fd, ino);
-	ip = mip->inode;
+	ip = &mip->inode;
 	char ftime[64], linkname[128];
-	int i
+	int i;
 
 	//print file mode
 	if ((ip->i_mode & 0xF000) == 0x8000) {
@@ -267,7 +267,7 @@ void chdir(char *pathname) {
 			return;
 		}
 		mip = iget(fd, ino);
-		if (mip.inode.i_mode != FILE_MODE) {
+		if (mip->inode.i_mode != FILE_MODE) {
 			printf("pathname is not a DIR\n");
 			return;
 		}
@@ -337,11 +337,11 @@ int enter_name(MINODE *pip, int myino, char *myname) {
 	printf("step to LAST entry in data block %d\n", pip->inode.i_block[i]);
 	while (cp + dp->rec_len < buf + BLKSIZE) {
 		
-		printf(ino )
+		printf("ino = %d, name = %s \n", dp->inode, dp->name);
 		cp += dp->rec_len;
 		dp = (DIR *)cp;
 	}
-	ideal_len = 4 * ((8 + dp->name_len _ 3) / 4);
+	ideal_len = 4 * ((8 + dp->name_len + 3) / 4);
 	remain = dp->rec_len - ideal_len;
 
 	if (remain < dp->rec_len) {
@@ -382,7 +382,7 @@ int mymkdir(MINODE *pip, char *name) {
 	ip->i_size = BLKSIZE;
 	ip->i_links_count = 2;
 	ip->i_atime = ip->i_ctime = ip->i_mtime = time(0L);
-	ip->blocks = 2;
+	ip->i_blocks = 2;
 	ip->i_block[0] = bno;
 	for (i = 1; i < 14; ++i) {
 		ip->i_block[i] = 0;
@@ -417,7 +417,7 @@ int make_dir(char *pathname) {
 
 	pino = getino(parent);
 	pmip = iget(dev, pino);
-	if (pmip.inode.i_mode != DIR_MODE) {
+	if (pmip->inode.i_mode != DIR_MODE) {
 		printf("Error: %s is not a valid pathname\n", pathname);
 		return -1;
 	}
@@ -455,7 +455,7 @@ int my_creat(MINODE *pip, char *name) {
 	ip->i_size = 0;
 	ip->i_links_count = 1;
 	ip->i_atime = ip->i_ctime = ip->i_mtime = time(0L);
-	ip->blocks = 2;
+	ip->i_blocks = 2;
 	//ip->i_block[0] = bno;
 	for (i = 0; i < 14; ++i) {
 		ip->i_block[i] = 0;
@@ -490,7 +490,7 @@ int creat_file(char *pathname) {
 
 	pino = getino(parent);
 	pmip = iget(dev, pino);
-	if (pmip.inode.i_mode != DIR_MODE) {
+	if (pmip->inode.i_mode != DIR_MODE) {
 		printf("Error: %s is not a valid pathname\n", pathname);
 		return -1;
 	}

@@ -1,3 +1,6 @@
+#include <ext2fs/ext2_fs.h>
+
+
 //constants
 #define SUPERBLOCK 1
 #define GDBLOCK 2
