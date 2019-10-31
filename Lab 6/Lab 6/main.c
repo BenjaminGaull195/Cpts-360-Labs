@@ -428,7 +428,7 @@ int make_dir(char *pathname) {
 	mymkdir(pmip, child);
 
 	//update i_links_count
-	//pmip->inode.i_links_count += 1;
+	pmip->inode.i_links_count += 1;
 	//touch atime
 	pmip->inode.i_atime = time(0L);
 
@@ -463,8 +463,8 @@ int my_creat(MINODE *pip, char *name) {
 	mip->dirty = 1;
 	iput(mip);
 
-	enter_name(mip, ino, ".");
-	enter_name(mip, pip->ino, "..");
+	//enter_name(mip, ino, ".");
+	//enter_name(mip, pip->ino, "..");
 	enter_name(pip, ino, name);
 
 	return 0;

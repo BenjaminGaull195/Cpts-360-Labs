@@ -1,6 +1,7 @@
 /*********** util.c file ****************/
 #include "type.h"
 #include <string.h>
+#include <stdint.h>
 
 /**** globals defined in main.c file ****/
 extern MINODE minode[NMINODE];
@@ -81,7 +82,7 @@ MINODE *iget(int dev, int ino)
 			get_block(dev, blk, buf);
 			ip = (INODE *)buf + disp;
 			// copy INODE to mp->INODE
-			mip->INODE = *ip;
+			mip->inode = *ip;
 
 			return mip;
 		}
@@ -114,7 +115,7 @@ int iput(MINODE *mip)
 	get_block(mip->dev, block, buf);
 
 	ip = (INODE *)buf + offset;
-	*ip = mip->INODE;
+	*ip = mip->inode;
 
 	put_block(mip->dev, block, buf);
 
@@ -187,7 +188,33 @@ int findmyname(MINODE *parent, uint32_t myino, char myname[])
 {
 	char buf[BLKSIZE];
 	// find mynio in parent data block; copy name string to myname[ ];
-	get_block(fd, parent->inode.i_block[0], buf);
+	//get_block(fd, parent->inode.i_block[0], buf);
+	INODE *ip = &parent->inode;
+	char buf[BLKSIZE];
+	int i;
+	DIR *dp;
+	char *cp;
+
+	for (i = 0; i < 12; ++i) {
+		if (ip->i_block[i] == 0) {
+			break;
+		}
+	}
+
+
+	get_block(fd, ip->i_block[i], buf);
+	dp = (DIR *)buf;
+	cp = buf;
+
+	while (cp < buf + BLKSIZE) {
+		if (dp->inode == myino) {
+			strncpy(myname, dp->name, dp->name_len);
+			return 0;
+		}
+		cp += dp->rec_len;
+		dp = (DIR *)cp
+	}
+
 
 }
 
@@ -197,7 +224,7 @@ int findino(MINODE *mip, uint32_t *myino) // return ino of parent and myino of .
 	char buf[BLKSIZE], *cp;
 	DIR *dp;
 
-	get_block(mip->dev, mip->INODE.i_block[0], buf);
+	get_block(mip->dev, mip->inode.i_block[0], buf);
 	cp = buf;
 	dp = (DIR *)buf;
 	*myino = dp->inode;
