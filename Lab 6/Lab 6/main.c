@@ -65,6 +65,7 @@ int main(int argc, char *argv[]) {
 
 	while (1) {
 		//print available commands
+		printCommands();
 		fgets(line, 256, stdin);
 		i = sscanf(line, "%s %s", cmd, pathname);
 
@@ -96,6 +97,15 @@ int main(int argc, char *argv[]) {
 	   	  
 	return 0;
 }
+
+void printCommands() {
+	printf("================ commands ==============\n");
+	printf("| ls | cd | pwd | mkdir | creat | quit |\n");
+	printf("========================================\n\n");
+
+	printf("Enter a command: ");
+}
+
 
 
 int init() {
