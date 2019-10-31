@@ -410,11 +410,13 @@ int make_dir(char *pathname) {
 	printf("pathname copied\n");
 
 	if (temp[0] == '/') {
+		printf("path is relative to root\n");
 		start = root;
 		dev = root->dev;
 		printf("start = root, dev = %d\n", dev);
 	}
 	else {
+		printf("path is relative to cwd\n");
 		start = running->cwd;
 		dev = running->cwd->dev;
 		printf("start = %d, dev = %d\n", start->ino, dev);
