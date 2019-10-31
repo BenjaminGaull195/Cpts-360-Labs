@@ -419,7 +419,9 @@ int make_dir(char *pathname) {
 	else {
 		printf("path is relative to cwd\n");
 		start = running->cwd;
+		printf("Debug: assign start\n");
 		dev = running->cwd->dev;
+		printf("Debug: assign dev\n");
 		printf("start = %d, dev = %d\n", start->ino, dev);
 	}
 	parent = dirname(temp);
