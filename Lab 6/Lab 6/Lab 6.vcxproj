@@ -74,6 +74,9 @@
   <ImportGroup Label="Shared" />
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <IncludePath>E:\Local Repos\Repos\BenjaminGaull195\Cpts-360-Labs\Lab 6\Lab 6\ext2fs;$(IncludePath)</IncludePath>
+  </PropertyGroup>
   <ItemGroup>
     <ClCompile Include="main.c" />
     <ClCompile Include="util.c" />
