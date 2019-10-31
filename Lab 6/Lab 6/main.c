@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
 		fgets(line, 256, stdin);
 		i = sscanf(line, "%s %s", cmd, pathname);
 
-		printf("cmd = %s, pathname = %s", cmd, pathname);
+		printf("cmd = %s, pathname = %s\n", cmd, pathname);
 
 		//cmd_ptrs[find_cmd(cmd)](pathname);
 		if (strcmp(cmd, "ls") == 0) {
@@ -407,8 +407,9 @@ int make_dir(char *pathname) {
 
 	printf("%s\n", pathname);
 	strcpy(temp, pathname);
+	printf("pathname copied\n");
 
-	if (pathname[0] == '/') {
+	if (temp[0] == '/') {
 		start = root;
 		dev = root->dev;
 		printf("start = root, dev = %d\n", dev);
