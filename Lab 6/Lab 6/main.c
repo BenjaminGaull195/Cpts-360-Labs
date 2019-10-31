@@ -99,7 +99,7 @@ int main(int argc, char *argv[]) {
 }
 
 void printCommands() {
-	printf("================ commands ==============\n");
+	printf("=============== commands ===============\n");
 	printf("| ls | cd | pwd | mkdir | creat | quit |\n");
 	printf("========================================\n\n");
 
@@ -407,16 +407,20 @@ int make_dir(char *pathname) {
 	if (pathname[0] == '/') {
 		start = root;
 		dev = root->dev;
+		printf("start = root, dev = %d\n", dev);
 	}
 	else {
 		start = running->cwd;
 		dev = running->cwd->dev;
+		printf("start = %d, dev = %d\n", start->ino, dev);
 	}
 	parent = dirname(temp);
 	child = basename(temp);
+	printf("parent = %s, child = %s", parent, child);
 
 	pino = getino(parent);
 	pmip = iget(dev, pino);
+	printf("pino = %d, pmip = %d", pino, pmip->ino);
 	if (pmip->inode.i_mode != DIR_MODE) {
 		printf("Error: %s is not a valid pathname\n", pathname);
 		return -1;
