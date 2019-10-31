@@ -69,6 +69,8 @@ int main(int argc, char *argv[]) {
 		fgets(line, 256, stdin);
 		i = sscanf(line, "%s %s", cmd, pathname);
 
+		printf("cmd = %s, pathname = %s", cmd, pathname);
+
 		//cmd_ptrs[find_cmd(cmd)](pathname);
 		if (strcmp(cmd, "ls") == 0) {
 			ls(pathname);
@@ -402,6 +404,8 @@ int make_dir(char *pathname) {
 	int dev, pino;
 	char *parent, *child, temp[256];
 	MINODE *pmip;
+
+	printf("%s\n", pathname);
 	strcpy(temp, pathname);
 
 	if (pathname[0] == '/') {
@@ -416,11 +420,11 @@ int make_dir(char *pathname) {
 	}
 	parent = dirname(temp);
 	child = basename(temp);
-	printf("parent = %s, child = %s", parent, child);
+	printf("parent = %s, child = %s\n", parent, child);
 
 	pino = getino(parent);
 	pmip = iget(dev, pino);
-	printf("pino = %d, pmip = %d", pino, pmip->ino);
+	printf("pino = %d, pmip = %d\n", pino, pmip->ino);
 	if (pmip->inode.i_mode != DIR_MODE) {
 		printf("Error: %s is not a valid pathname\n", pathname);
 		return -1;
