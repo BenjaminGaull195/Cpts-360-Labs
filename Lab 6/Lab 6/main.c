@@ -134,9 +134,9 @@ int mount_root() {
 	char buf[BLKSIZE];
 	//SUPER *sp;
 	//GD * gp;
-	fd = open("diskImage", O_RDWR);
+	fd = open("disk", O_RDWR);
 	if (fd < 0) {
-		printf("Failed to open diskImage\n");
+		printf("Failed to open disk\n");
 		exit(1);
 	}
 	
