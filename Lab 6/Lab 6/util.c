@@ -291,25 +291,111 @@ int ialloc(int dev)  // allocate an inode number
 	return 0;
 }
 
+int decFreeBlocks(int dev) {
+	char buf[BLKSIZE];
+	// dec free blocks count by 1 in SUPER and GD
+	get_block(dev, 1, buf);
+	sp = (SUPER *)buf;
+	sp->s_free_blocks_count--;
+	put_block(dev, 1, buf);
+
+	get_block(dev, 2, buf);
+	gp = (GD *)buf;
+	gp->bg_free_blocks_count--;
+	put_block(dev, 2, buf);
+}
+
 int balloc(int dev)  // allocate an inode number
 {
 	int  i;
 	char buf[BLKSIZE];
 
-	// read inode_bitmap block
+	// read block_bitmap block
 	get_block(dev, bmap, buf);
 
 	for (i = 0; i < nblocks; i++) {
 		if (tst_bit(buf, i) == 0) {
 			set_bit(buf, i);
 			put_block(dev, bmap, buf);
-			decFreeInodes(fd);
+			decFreeBlocks(fd);
 			return i + 1;
 		}
 	}
 	return 0;
 }
 
+int incFreeBlocks(int dev) {
+	char buf[BLKSIZE];
+
+	// inc free blocks count in SUPER and GD
+	get_block(dev, 1, buf);
+	sp = (SUPER *)buf;
+	sp->s_free_blocks_count++;
+	put_block(dev, 1, buf);
+
+	get_block(dev, 2, buf);
+	gp = (GD *)buf;
+	gp->bg_free_blocks_count++;
+	put_block(dev, 2, buf);
+}
+
+int incFreeInodes(int dev)
+{
+	char buf[BLKSIZE];
+
+	// inc free inodes count in SUPER and GD
+	get_block(dev, 1, buf);
+	sp = (SUPER *)buf;
+	sp->s_free_inodes_count++;
+	put_block(dev, 1, buf);
+
+	get_block(dev, 2, buf);
+	gp = (GD *)buf;
+	gp->bg_free_inodes_count++;
+	put_block(dev, 2, buf);
+}
+
+idalloc(int dev, int ino)  // deallocate an ino number
+{
+	int i;
+	char buf[BLKSIZE];
+
+	if (ino > ninodes) {
+		printf("inumber %d out of range\n", ino);
+		return;
+	}
+
+	// get inode bitmap block
+	get_block(dev, imap, buf);
+	clr_bit(buf, ino - 1);
+
+	// write buf back
+	put_block(dev, imap, buf);
+
+	// update free inode count in SUPER and GD
+	incFreeInodes(dev);
+}
+
+int bdalloc(int dev, int blk) // deallocate a blk number
+{
+	int i;
+	char buf[BLKSIZE];
+
+	if (blk > nblocks) {
+		printf("inumber %d out of range\n", blk);
+		return;
+	}
+
+	// get inode bitmap block
+	get_block(dev, bmap, buf);
+	clr_bit(buf, blk - 1);
+
+	// write buf back
+	put_block(dev, bmap, buf);
+
+	// update free inode count in SUPER and GD
+	incFreeBlocks(dev);
+}
 
 
 

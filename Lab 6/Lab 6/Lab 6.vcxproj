@@ -79,6 +79,8 @@
   </PropertyGroup>
   <ItemGroup>
     <ClCompile Include="main.c" />
+    <ClCompile Include="mkdir_creat.c" />
+    <ClCompile Include="rmdir.c" />
     <ClCompile Include="util.c" />
   </ItemGroup>
   <ItemGroup>

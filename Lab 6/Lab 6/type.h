@@ -26,6 +26,10 @@ typedef struct ext2_inode INODE;
 typedef struct ext2_dir_entry_2 DIR;
 
 #define BLKSIZE 1024
+#define ISIZE              128
+
+#define BITS_PER_BLOCK    (8*BLOCK_SIZE)
+#define INODES_PER_BLOCK  (BLOCK_SIZE/sizeof(INODE))
 
 typedef struct oft {
 	int mode;
@@ -55,7 +59,7 @@ typedef struct minode {
 
 }MINODE;
 
-typedef struct mtable {
+typedef struct mount {
 	int dev;
 	int ninodes;
 	int nblocks;
@@ -65,6 +69,6 @@ typedef struct mtable {
 	int imap;
 	int iblock;
 	MINODE *mntDirPtr;
-	char devName[64];
+	char devName[256];
 	char mntName[64];
-};
+} MOUNT;
