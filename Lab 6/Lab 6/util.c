@@ -198,21 +198,24 @@ int findmyname(MINODE *parent, uint32_t myino, char myname[])
 		if (ip->i_block[i] == 0) {
 			break;
 		}
-	}
+		else {
+			get_block(fd, ip->i_block[i], buf);
+			dp = (DIR *)buf;
+			cp = buf;
 
-
-	get_block(fd, ip->i_block[i], buf);
-	dp = (DIR *)buf;
-	cp = buf;
-
-	while (cp < buf + BLKSIZE) {
-		if (dp->inode == myino) {
-			strncpy(myname, dp->name, dp->name_len);
-			return 0;
+			while (cp < buf + BLKSIZE) {
+				if (dp->inode == myino) {
+					strncpy(myname, dp->name, dp->name_len);
+					return 0;
+				}
+				cp += dp->rec_len;
+				dp = (DIR *)cp;
+			}
 		}
-		cp += dp->rec_len;
-		dp = (DIR *)cp;
 	}
+
+
+	
 
 
 }
