@@ -78,6 +78,7 @@
     <IncludePath>E:\Local Repos\Repos\BenjaminGaull195\Cpts-360-Labs\Lab 6\Lab 6\ext2fs;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemGroup>
+    <ClCompile Include="link_unlink_symlink.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="mkdir_creat.c" />
     <ClCompile Include="rmdir.c" />

@@ -16,7 +16,7 @@ int fd, dev;
 int ninodes, nblocks;
 int bmap, imap, inode_start, iblock;
 
-char line[256], cmd[32], pathname[256];
+char line[256], cmd[32], pathname[256], pathname2[256];
 
 char gpath[256];
 char *name;
@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
 		//print available commands
 		printCommands();
 		fgets(line, 256, stdin);
-		i = sscanf(line, "%s %s", cmd, pathname);
+		i = sscanf(line, "%s %s %s", cmd, pathname, pathname2);
 
 		printf("cmd = %s, pathname = %s\n", cmd, pathname);
 

@@ -14,7 +14,7 @@ extern int    n;
 
 extern int    fd, dev;
 extern int    nblocks, ninodes, bmap, imap, inode_start;
-extern char   line[256], cmd[32], pathname[256];
+extern char   line[256], cmd[32], pathname[256], pathname2[256];
 
 extern GD    *gp;
 extern SUPER *sp;

@@ -1,4 +1,7 @@
 #include "type.h"
+#include <string.h>
+#include <time.h>
+
 
 extern int fd, dev;
 extern int ninodes, nblocks;
