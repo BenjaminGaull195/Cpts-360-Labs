@@ -81,6 +81,7 @@
     <ClCompile Include="link_unlink_symlink.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="mkdir_creat.c" />
+    <ClCompile Include="open_close_lseek.c" />
     <ClCompile Include="rmdir.c" />
     <ClCompile Include="util.c" />
   </ItemGroup>

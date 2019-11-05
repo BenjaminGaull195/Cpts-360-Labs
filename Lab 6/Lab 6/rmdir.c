@@ -47,6 +47,15 @@ int rm_child(MINODE *pmip, char *myname) {
 				else if (dp->rec_len == BLKSIZE) {	//only entry entry
 					bdalloc(fd, pmip->inode.i_block[i]);
 					
+					for (i = i + 1; i < 12; ++i) {
+						if (pmip->inode.i_block[i] == 0) {
+							pmip->inode.i_block[i - 1] = 0;
+							break;
+						}
+						pmip->inode.i_block[i - 1] = pmip->inode.i_block[i];
+					}
+
+
 					return 0;
 				}
 				else { //middle entry

@@ -31,6 +31,9 @@ typedef struct ext2_dir_entry_2 DIR;
 #define BITS_PER_BLOCK    (8*BLOCK_SIZE)
 #define INODES_PER_BLOCK  (BLOCK_SIZE/sizeof(INODE))
 
+
+
+
 typedef struct oft {
 	int mode;
 	int refCount;
