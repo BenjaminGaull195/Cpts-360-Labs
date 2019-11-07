@@ -61,7 +61,22 @@ int rm_child(MINODE *pmip, char *myname) {
 				else { //middle entry
 					cp2 = cp + dp->rec_len;
 					rec = dp->rec_len;
-					dp = (DIR *)cp2;
+					int bytesToMove = (buf + BLKSIZE) - (cp + dp->rec_len);
+
+					memmove(cp, cp2, bytesToMove);
+
+					dp = (DIR *)cp;
+
+					while ((cp + dp->rec_len) < (buf + BLKSIZE - rec)) {
+						cp += dp->rec_len;
+						dp = (DIR *)cp;
+					}
+					dp->rec_len += rec;
+
+					put_block(fd, pmip->inode.i_block[i], buf);
+					return 0;
+
+					/*dp = (DIR *)cp2;
 					while (cp2 < buf + BLKSIZE) {
 						memcpy(cp, cp2, dp->rec_len);
 						dp = (DIR *)cp;
@@ -71,13 +86,10 @@ int rm_child(MINODE *pmip, char *myname) {
 					}
 					dp->rec_len += rec;
 					put_block(pmip->dev, pmip->inode.i_block[i], buf);
-					return 0;
+					return 0;*/
 				}
 			}
-			/*if (!strcmp(dp->name, myname)) {
-				prev->rec_len += dp->rec_len;
-				return -1;
-			}*/
+			
 			cp += dp->rec_len;
 			prev = dp;
 			dp = (DIR *)cp;

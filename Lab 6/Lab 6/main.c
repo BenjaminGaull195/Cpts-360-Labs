@@ -257,6 +257,7 @@ void ls(char *pathname) {
 	else {
 
 	}
+
 }
 
 void chdir(char *pathname) {
