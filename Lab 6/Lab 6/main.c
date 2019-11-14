@@ -68,10 +68,10 @@ int main(int argc, char *argv[]) {
 	mount_root();
 	int i;
 
-	printf("INIT DEBUG:\n");
+	/*printf("INIT DEBUG:\n");
 	printf("Proc%d: uid=%d, gid=%d\n", running->pid, running->uid, running->gid);
 	printf("Proc%d: cwd=%d\n", running->pid, running->cwd);
-	printf("END INIT DEBUG\n");
+	printf("END INIT DEBUG\n");*/
 
 	while (1) {
 		//print available commands
@@ -156,7 +156,7 @@ int init() {
 	proc[NPROC - 1].next = &proc[0];
 	running = &proc[0];
 
-	root = 0;
+	//root = 0;
 
 }
 
@@ -166,7 +166,7 @@ int mount_root() {
 	MINODE *mip;
 	//SUPER *sp;
 	//GD * gp;
-	fd = open("disk", O_RDWR);
+	fd = dev = open("disk", O_RDWR);
 	if (fd < 0) {
 		printf("Failed to open disk\n");
 		exit(1);
@@ -195,11 +195,11 @@ int mount_root() {
 	printf("bmp=%d imap=%d iblock = %d\n", bmap, imap, iblock);
 
 	mip = iget(fd, 2);
-	printf("debug: root=%d\n", mip);
+	//printf("debug: root=%d\n", mip);
 	root = mip;
 
-	proc[0].cwd = iget(fd, 2);
-	proc[1].cwd = iget(fd, 2);
+	proc[0].cwd = mip;
+	proc[1].cwd = mip;
 
 	//running = &proc[0];
 }
