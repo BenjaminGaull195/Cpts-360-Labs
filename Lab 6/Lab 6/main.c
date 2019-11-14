@@ -246,11 +246,15 @@ int ls_file(int ino, char *fname) {
 		printf(" - > %s", linkname);
 	}
 	printf("\n");
+	iput(mip);
 }
 
 int ls_dir(char *dname) {
+	printf("--debug ");
 	int ino = getino(pathname);
+	printf("debug ");
 	MINODE *mip = iget(fd, ino);
+	printf("debug\n");
 	char buf[BLKSIZE], *cp;
 	//DIR *dp;
 	int i = 0;
@@ -265,6 +269,7 @@ int ls_dir(char *dname) {
 		dp = (DIR *)buf;
 		cp = buf;
 	}
+	iput(mip);
 }
 
 
@@ -284,9 +289,13 @@ void ls(char *pathname) {
 	//DIR *dp;
 	if (strcmp(pathname, "") == 0) {	//ls for cwd
 		get_block(fd, running->cwd->inode.i_block[0], buf);
+		printf("--debug ");
 		dp = (DIR *)buf;
+		printf("debug ");
 		name = dp->name;
+		printf("debug ");
 		ls_dir(name);
+		printf("debug\n");
 	}
 	else {
 
