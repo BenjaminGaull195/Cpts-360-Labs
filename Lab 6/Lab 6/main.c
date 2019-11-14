@@ -160,6 +160,7 @@ int init() {
 
 int mount_root() {
 	char buf[BLKSIZE];
+	MINODE *mip;
 	//SUPER *sp;
 	//GD * gp;
 	fd = open("disk", O_RDWR);
@@ -190,8 +191,9 @@ int mount_root() {
 
 	printf("bmp=%d imap=%d iblock = %d\n", bmap, imap, iblock);
 
-	root = iget(fd, 2);
-
+	mip = iget(fd, 2);
+	printf("debug: root=%d\n", mip);
+	root = mip;
 
 	proc[0].cwd = iget(fd, 2);
 	proc[1].cwd = iget(fd, 2);
