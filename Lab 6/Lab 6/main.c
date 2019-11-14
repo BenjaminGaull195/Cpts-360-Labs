@@ -155,7 +155,9 @@ int init() {
 	}
 	proc[NPROC - 1].next = &proc[0];
 	running = &proc[0];
-
+	printf("debug: &proc=%d\n", &proc);
+	printf("debug: &proc0=%d\n", &proc[0]);
+	printf("debug: &proc1=%d\n", &proc[1]);
 	printf("debug: running=%d\n", running);
 	//root = 0;
 
