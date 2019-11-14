@@ -431,7 +431,7 @@ int truncate(MINODE *mip) {
 		}
 		bdalloc(fd, p[i]);
 	}
-	bdalloc(mip->inode.i_block[12]);
+	bdalloc(fd, mip->inode.i_block[12]);
 
 	get_block(fd, mip->inode.i_block[13], buf);
 	p = (int *)buf;

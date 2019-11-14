@@ -170,7 +170,7 @@ int rm_dir() {
 		return -1;
 	}
 
-	if (!strcmp(pathname, ".") || !strcmp(pathname, "..") {
+	if (!strcmp(pathname, ".") || !strcmp(pathname, "..")) {
 		printf("can't remove %s\n", pathname);
 		iput(mip);
 		return -1;
