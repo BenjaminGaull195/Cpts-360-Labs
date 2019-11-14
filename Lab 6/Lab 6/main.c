@@ -156,6 +156,7 @@ int init() {
 	proc[NPROC - 1].next = &proc[0];
 	running = &proc[0];
 
+	printf("debug: running=%d\n", running);
 	//root = 0;
 
 }
