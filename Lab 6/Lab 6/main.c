@@ -45,10 +45,13 @@ int mount_root();
 void ls(char *pathname);
 void chdir(char *pathname);
 void pwd(MINODE *wd);
-int make_dir(char *pathname);
-int creat_file(char *pathname);
-int rmdir();
-
+extern int make_dir(char *pathname);
+extern int creat_file(char *pathname);
+extern int rm_dir();
+extern int link();
+extern int unlink();
+extern int symlink();
+extern int showlink();
 
 void quit();
 
