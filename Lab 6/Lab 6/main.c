@@ -65,6 +65,11 @@ int main(int argc, char *argv[]) {
 	mount_root();
 	int i;
 
+	printf("INIT DEBUG:\n");
+	printf("Proc%d: uid=%d, gid=%d\n", running->pid, running->uid, running->gid);
+	printf("Proc%d: cwd=%d\n", running->pid, running->cwd);
+	printf("END INIT DEBUG\n");
+
 	while (1) {
 		//print available commands
 		strcpy(pathname, "");
@@ -191,7 +196,7 @@ int mount_root() {
 	proc[0].cwd = iget(fd, 2);
 	proc[1].cwd = iget(fd, 2);
 
-	running = &proc[0];
+	//running = &proc[0];
 }
 
 //helper functions
