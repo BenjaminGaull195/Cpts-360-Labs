@@ -30,6 +30,7 @@ DIR   *dp;
 MINODE minode[NMINODE];
 MINODE *root;
 PROC   proc[NPROC], *running;
+OFT fileTable[NOFT];
 
 char *t1 = "xwrxwrxwr-------";
 char *t2 = "----------------";

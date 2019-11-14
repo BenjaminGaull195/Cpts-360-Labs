@@ -7,6 +7,7 @@
 
 #define DIR_MODE 0x41ED
 #define FILE_MODE 0x81AE
+#define LINK_MODE 0xA000	//this value is not provided, value taken from ls code
 #define SUPER_MGAIC 0xEF53
 
 #define SUPER_USER 0

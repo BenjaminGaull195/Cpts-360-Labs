@@ -6,6 +6,8 @@
 extern MINODE minode[NMINODE];
 extern MINODE *root;
 extern PROC   proc[NPROC], *running;
+extern OFT fileTable[NOFT];
+
 
 extern char   gpath[256];
 extern char   *name[64];
@@ -38,13 +40,13 @@ int open_file(char *pathname, int mode) {
 		printf("%s is not a file\n");
 		return -1;
 	}
-	else if () {	//check permissions
+	else if (running->uid != 0 && mip->inode.i_uid == 0) {	//check permissions
 		printf("user does not have permission\n");
 		return -1;
 	}
 
 	//allocate free oft
-
+	oftp = allocOFT();
 
 	oftp->minodePtr = mip;
 	oftp->mode = mode;
@@ -59,7 +61,7 @@ int open_file(char *pathname, int mode) {
 			oftp->offset = 0;
 			break;
 		case 2:
-			oftp->offset - 0;
+			oftp->offset = 0;
 			break;
 		case 3:
 			oftp->offset = mip->inode.i_size;
@@ -73,6 +75,7 @@ int open_file(char *pathname, int mode) {
 	for (i = 0; i < NFD; ++i) {
 		if (running->fd[i] == 0) {
 			running->fd[i] = oftp;
+			break;
 		}
 	}
 
@@ -81,12 +84,13 @@ int open_file(char *pathname, int mode) {
 	{
 	case 0:
 		mip->inode.i_atime = time(0L);
+		mip->dirty = 1;
 		break;
 	case 1:
 	case 2:
 	case 3:
 		mip->inode.i_atime = mip->inode.i_mtime = time(0L);
-		mip->dirty;
+		mip->dirty = 1;
 		break;
 	}
 
@@ -94,38 +98,7 @@ int open_file(char *pathname, int mode) {
 }
 
 
-int truncate(MINODE *mip) {
-	int i, j;
-	char buf1[BLKSIZE], buf2[BLKSIZE];
 
-	//for direct blocks
-	for (i = 0; i < 12; ++i) {
-		bdalloc(fd, mip->inode.i_block[i]);
-		mip->inode.i_block[i] = 0;
-	}
-
-	//for indirect blocks
-	get_block(fd, mip->inode.i_block[12], buf1);
-	for (i = 0; i < 256; ++i) {
-
-
-		bdalloc(fd, );
-
-	}
-
-	//for double indirect blocks
-	get_block(fd, mip->inode.i_block[13], buf1);
-	for (i = 0; i < 256; ++i) {
-
-		get_block(fd, , buf2);
-		for (j = 0; j < 256; ++j) {
-			bdalloc(fd, );
-		}
-		bdalloc(fd, );
-
-	}
-
-}
 
 int close_file(int fd) {
 	OFT * oftp;
@@ -144,12 +117,11 @@ int close_file(int fd) {
 	oftp = running->fd[fd];
 	running->fd[fd] = 0;
 	oftp->refCount--;
-	if (oftp->refCount > 0) {
-		return 0;
+	if (oftp->refCount == 0) {
+		mip = oftp->minodePtr;
+		iput(mip);
 	}
-	mip = oftp->minodePtr;
-	iput(mip);
-
+	
 	return 0;
 
 }
@@ -164,8 +136,8 @@ int lseek(int fd, int position) {
 	//change oft offset position, do not overrun eof
 	pos = oftp->offset;
 
-	if (position >= oftp->minodePtr->inode.i_size) {
-		printf("error: position exceeds file size\n");
+	if (position >= oftp->minodePtr->inode.i_size || position < 0) {
+		printf("error: position out of bounds\n");
 		return -1;
 	}
 	oftp->offset = position;
@@ -207,16 +179,17 @@ int dup(int fd) {
 	}
 	for (i = 0; i < NFD; ++i) {
 		if (running->fd[i] == 0) {
-			running->fd[i] = fd;
+			running->fd[i] = running->fd[fd];
 			return i;
 		}
 	}
+	printf("error: can't dup fd\n");
 	return -1;
 }
 
 int dup2(int fd, int gd) {
 	close_file(gd);
-	dup[fd];
+	dup(fd);
 }
 
 

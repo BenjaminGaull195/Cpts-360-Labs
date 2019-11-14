@@ -58,9 +58,6 @@ int link() {
 
 }
 
-int truncate(MINODE *mip) {
-
-}
 
 
 
@@ -87,7 +84,7 @@ int unlink() {
 	//remove if links = 0
 	if (mip->inode.i_links_count == 0) {
 		truncate(mip);
-		idalloc();
+		idalloc(fd, mip->ino);
 	}
 
 	//remove from parent dir
@@ -98,6 +95,7 @@ int unlink() {
 	pmip = iget(fd, pino);
 
 	rm_child(pmip, child);
+	pmip->dirty = 1;
 
 	iput(mip);
 	iput(pmip);
@@ -113,7 +111,7 @@ int symlink() {
 
 	//verify pathname is file
 	if (omip->inode.i_mode == DIR_MODE) {
-		printf("pathname is not a file\n");
+		printf("pathname %s is not a file\n", pathname);
 		return -1;
 	}
 
@@ -127,11 +125,12 @@ int symlink() {
 	nmip->inode.i_mode = LINK_MODE;
 
 	//write oldname to new file
-
+	strcpy((char *)nmip->inode.i_block, pathname2);
 
 	//set file size to num chars in oldname
 	nmip->inode.i_size = nChar;
 
+	nmip->dirty = 1;
 	//write inode back to disk
 	iput(omip);
 	iput(nmip);
@@ -151,7 +150,7 @@ int showlink() {
 	}
 
 	//get link info
-
+	strcpy(link, (char *)mip->inode.i_block);
 
 	//print link
 	printf("%s\n", link);

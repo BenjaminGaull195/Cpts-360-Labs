@@ -7,6 +7,8 @@
 extern MINODE minode[NMINODE];
 extern MINODE *root;
 extern PROC   proc[NPROC], *running;
+extern OFT fileTable[NOFT];
+
 
 extern char   gpath[256];
 extern char   *name[64];
@@ -399,6 +401,65 @@ int bdalloc(int dev, int blk) // deallocate a blk number
 	// update free inode count in SUPER and GD
 	incFreeBlocks(dev);
 }
+
+
+OFT * allocOFT() {
+	int i;
+	for (i = 0; i < NOFT; ++i) {
+		if (fileTable[i].refCount == 0) {
+			return &fileTable[i];
+		}
+	}
+}
+
+int truncate(MINODE *mip) {
+	int i, j, *p, *q;
+	char buf[BLKSIZE], buf2[BLKSIZE];
+
+	for (i = 0; i < 12; ++i) {	//direct blocks
+		if (mip->inode.i_block[i] == 0) {
+			break;
+		}
+		bdalloc(fd, mip->inode.i_block[i]);
+	}
+
+	get_block(fd, mip->inode.i_block[12], buf);
+	p = (int *)buf;
+	for (i = 0; i < 256; ++i) {	//indirect blocks
+		if (p[i] == 0) {
+			break;
+		}
+		bdalloc(fd, p[i]);
+	}
+	bdalloc(mip->inode.i_block[12]);
+
+	get_block(fd, mip->inode.i_block[13], buf);
+	p = (int *)buf;
+	for (i = 0; i < 256; ++i) {
+		if (p[i] == 0) {
+			break;
+		}
+		get_block(fd, p[i], buf2);
+		q = (int *)buf2;
+		for (j = 0; j < 256; ++j) {
+			if (q[j] == 0) {
+				break;
+			}
+			bdalloc(fd, q[j]);
+		}
+		bdalloc(fd, p[i]);
+	}
+	bdalloc(fd, mip->inode.i_block[13]);
+
+	mip->inode.i_size = 0;
+	mip->dirty = 1;
+}
+
+
+
+
+
+
 
 
 
