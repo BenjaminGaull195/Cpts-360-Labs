@@ -287,9 +287,11 @@ int ls_dir(char *dname) {
 void ls(char *pathname) {
 	char *name, buf;
 	//DIR *dp;
+	printf("--debug ");
 	if (strcmp(pathname, "") == 0) {	//ls for cwd
+		printf("debug ");
 		get_block(fd, running->cwd->inode.i_block[0], buf);
-		printf("--debug ");
+		printf("debug ");
 		dp = (DIR *)buf;
 		printf("debug ");
 		name = dp->name;
