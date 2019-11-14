@@ -22,8 +22,8 @@ extern MINODE minode[NMINODE];
 extern MINODE *root;
 extern PROC   proc[NPROC], *running;
 
-char *t1 = "xwrxwrxwr-------";
-char *t2 = "----------------";
+//char *t1 = "xwrxwrxwr-------";
+//char *t2 = "----------------";
 
 
 
