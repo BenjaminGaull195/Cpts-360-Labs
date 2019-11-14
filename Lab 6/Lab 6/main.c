@@ -67,6 +67,8 @@ int main(int argc, char *argv[]) {
 
 	while (1) {
 		//print available commands
+		strcpy(pathname, "");
+		strcpy(pathname2, "");
 		printCommands();
 		fgets(line, 256, stdin);
 		i = sscanf(line, "%s %s %s", cmd, pathname, pathname2);
@@ -92,6 +94,22 @@ int main(int argc, char *argv[]) {
 		else if (strcmp(cmd, "creat") == 0) {
 			creat_file(pathname);
 		}
+		else if (strcmp(cmd, "rmdir") == 0) {
+			//rmdir();
+			rm_dir();
+		}
+		else if (strcmp(cmd, "link") == 0) {
+			link();
+		}
+		else if (strcmp(cmd, "unlink") == 0) {
+			unlink();
+		}
+		else if (strcmp(cmd, "symlink") == 0) {
+			symlink();
+		}
+		else if (strcmp(cmd, "showlink") == 0) {
+			showlink();
+		}
 		else {
 			printf("%s is not an available command\n");
 		}
@@ -103,9 +121,10 @@ int main(int argc, char *argv[]) {
 }
 
 void printCommands() {
-	printf("=============== commands ===============\n");
-	printf("| ls | cd | pwd | mkdir | creat | quit |\n");
-	printf("========================================\n\n");
+	printf("================ commands ================\n");
+	printf("|  ls | cd | pwd | mkdir | creat | quit   |\n");
+	printf("| rmdir | link| unlink| symlink| showlink |\n");
+	printf("==========================================\n\n");
 
 	printf("Enter a command: ");
 }

@@ -100,7 +100,7 @@ int rm_child(MINODE *pmip, char *myname) {
 }
 
 
-int rmdir() {
+int rm_dir() {
 	int i, uid;
 	int pino;
 	MINODE *pmip;
