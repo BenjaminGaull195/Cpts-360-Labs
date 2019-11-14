@@ -260,6 +260,7 @@ int ls_dir(char *dname) {
 
 	while (cp < buf + BLKSIZE) {
 		mip = iget(fd, dp->inode);
+		printf("--debug: mip=%d, ino=%d, name=%s\n", mip, mip->ino, dp->name);
 		ls_file(mip->ino, dp->name);
 		dp = (DIR *)buf;
 		cp = buf;
